@@ -1,0 +1,22 @@
+reviews:
+  high_level_summary: true
+  poem: true
+  review_status: true
+  collapse_walkthrough: true
+  path_filters:
+    - "!**/*.md"
+    - "!**/*.txt"
+    - "!**/*.json"
+    - "!**/package-lock.json"
+  path_instructions:
+    - path: "src/**/*"
+      instructions: "Focus on TypeScript/React best practices, performance, and maintainability"
+    - path: ".husky/**/*"
+      instructions: "Ensure Git hooks are properly configured for code quality"
+    - path: ".eslintrc.json"
+      instructions: "Verify ESLint rules follow project standards"
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "main"
