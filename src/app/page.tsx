@@ -1,31 +1,28 @@
-"use client";
+import { Advocate } from "../types/advocate";
+import { SearchClient } from "../components/SearchClient";
 
-import { useAdvocates } from "../hooks/useAdvocates";
-import { useAdvocateSearch } from "../hooks/useAdvocateSearch";
-import { SearchInput } from "../components/SearchInput";
-import { AdvocateTable } from "../components/AdvocateTable";
+async function getAdvocates(): Promise<Advocate[]> {
+  try {
+    const response = await fetch('/api/advocates', {
+      cache: 'no-store' // Ensure fresh data on each request
+    });
+    const data = await response.json();
+    return data.advocates || [];
+  } catch (error) {
+    console.error('Failed to fetch advocates:', error);
+    return [];
+  }
+}
 
-export default function Home() {
-  const { advocates } = useAdvocates();
-  const { filteredAdvocates, handleSearchChange, resetSearch } = useAdvocateSearch(advocates);
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleSearchChange(e.target.value || "");
-  };
-
-  const onClick = () => {
-    resetSearch();
-  };
+export default async function Home() {
+  const advocates = await getAdvocates();
 
   return (
     <main style={{ margin: "24px" }}>
       <h1>Solace Advocates</h1>
       <br />
       <br />
-      <SearchInput onChange={onChange} onReset={onClick} />
-      <br />
-      <br />
-      <AdvocateTable advocates={filteredAdvocates} />
+      <SearchClient initialAdvocates={advocates} />
     </main>
   );
 }
