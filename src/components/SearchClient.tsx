@@ -23,15 +23,13 @@ export function SearchClient({ initialAdvocates }: SearchClientProps) {
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleSearchChange(e.target.value || "");
+    handleSearchChange(e.target.value);
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <SearchInput onChange={onChange} onReset={handleReset} />
-      <br />
-      <br />
       <AdvocateTable advocates={filteredAdvocates} />
-    </>
+    </div>
   );
 }

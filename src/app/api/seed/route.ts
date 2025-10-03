@@ -5,7 +5,7 @@ import { advocateData } from "../../../db/seed/advocates";
 export async function POST() {
   try {
     // change to upsert
-    const records = await db.insert(advocates).values(advocateData).returning();
+    const records = await db.insert(advocates).values(advocateData).onConflictDoNothing().returning();
 
     return Response.json({ advocates: records });
   } catch (error) {

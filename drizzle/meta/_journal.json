@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1759457650770,
+      "tag": "0000_plain_sharon_carter",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1759458604828,
+      "tag": "0001_absent_nightshade",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759459000000,
+      "tag": "0002_convert_specialties_to_text_array",
+      "breakpoints": true
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import { SearchClient } from "../components/SearchClient";
 // Force dynamic rendering since we fetch fresh data
 export const dynamic = 'force-dynamic';
 
-async function getAdvocates(): Promise<Advocate[]> {
+async function getAdvocates(): Promise<{ advocates: Advocate[]; error?: string }> {
   try {
     // In server components, construct the full URL using headers
     const headersList = headers();
@@ -13,25 +13,24 @@ async function getAdvocates(): Promise<Advocate[]> {
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
     const baseUrl = `${protocol}://${host}`;
 
-    const response = await fetch(`${baseUrl}/api/advocates`, {
-      cache: 'no-store' // Ensure fresh data on each request
-    });
+    const response = await fetch(`${baseUrl}/api/advocates`);
     const data = await response.json();
-    return data.advocates || [];
+    return { advocates: data.advocates || [] };
   } catch (error) {
     console.error('Failed to fetch advocates:', error);
-    return [];
+    return { advocates: [], error: 'Failed to load advocates. Please try again later.' };
   }
 }
 
 export default async function Home() {
-  const advocates = await getAdvocates();
+  const { advocates, error } = await getAdvocates();
 
   return (
     <main style={{ margin: "24px" }}>
       <h1>Solace Advocates</h1>
       <br />
       <br />
+      {error && <div role="alert" className="text-red-600">{error}</div>}
       <SearchClient initialAdvocates={advocates} />
     </main>
   );
