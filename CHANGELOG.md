@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-01-31
+
+### Added
+- **Separated search and filter components** for better UX with static search bar and collapsible advanced filters
+- **React Context state management** replacing Zustand for simpler, more maintainable state management
+- **Enhanced accessibility features** with improved ARIA labels, keyboard navigation, and screen reader support
+- **Advanced tooltip component** with full keyboard support and accessibility compliance
+- **Shared type definitions** to eliminate code duplication and maintain DRY principles
+- **Comprehensive form validation** with react-hook-form and Zod schema validation
+- **Dynamic specialty management** in forms with add/remove functionality
+- **Loading skeletons** for better perceived performance during data fetching
+- **Performance monitoring utilities** with Web Vitals tracking and memory usage monitoring
+- **Modal component** for advocate creation with proper focus management and accessibility
+- **Pagination component** with items-per-page selection and smart navigation
+- **Sortable table columns** with visual indicators and keyboard navigation
+- **Advanced filtering system** with collapsible interface and active filter display
+
+### Changed
+- **State management architecture** migrated from Zustand to React Context with useReducer
+- **Component separation** with dedicated SearchBar and AdvancedFilters components
+- **Search input behavior** now static and always visible for better user experience
+- **Filter logic improvements** using proper pagination context and preserving search terms
+- **Type safety enhancements** with shared type definitions and proper TypeScript coverage
+- **API route configuration** with dynamic rendering to prevent static generation issues
+- **Form handling** upgraded to react-hook-form with real-time validation and error handling
+
+### Fixed
+- **Focus loss issues** in search input by extracting stable input components with forwardRef
+- **TypeScript compilation errors** with proper type annotations and casting
+- **Dynamic server usage errors** in API routes with proper Next.js configuration
+- **Linting errors** resolved across all components with ESLint disable comments where appropriate
+- **Code duplication** eliminated with shared type definitions and proper imports
+- **Filter state management** improved with proper pagination and search context integration
+- **Accessibility compliance** enhanced with proper ARIA attributes and keyboard support
+
+### Performance
+- **Component memoization** with React.memo to prevent unnecessary re-renders
+- **Stable component references** to prevent focus loss and improve user experience
+- **Optimized state updates** with proper dependency arrays and callback optimization
+- **Bundle size optimization** with proper code splitting and lazy loading strategies
+
+### Architecture
+- **Simplified state management** with React Context replacing complex Zustand setup
+- **Component separation** with clear single responsibility principles
+- **Shared type system** for consistent type definitions across the application
+- **Enhanced accessibility** with comprehensive ARIA support and keyboard navigation
+- **Improved maintainability** with better code organization and reduced complexity
+
 ## [0.2.0] - 2025-01-31
 
 ### Added
