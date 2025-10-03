@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useEffect, useState } from "react";
-import { useAdvocates, useAdvocatesLoading, useAdvocatesError, useAdvocatesPagination, useAdvocatesFilters, useAdvocateActions } from "../stores/advocateStore";
+import { useAdvocates, useAdvocatesLoading, useAdvocatesError, useAdvocatesPagination, useAdvocatesFilters, useAdvocateStore } from "../stores/advocateStore";
 import { SearchBar } from "./SearchBar";
 import { AdvancedFilters } from "./AdvancedFilters";
 import { AdvocateTable } from "./AdvocateTable";
@@ -31,7 +31,9 @@ export function SearchClientWithStore() {
   const pagination = useAdvocatesPagination();
   const filters = useAdvocatesFilters();
   // Zustand store actions
-  const { setPagination, searchAdvocates, loadAllAdvocates } = useAdvocateActions();
+  const setPagination = useAdvocateStore((state) => state.setPagination);
+  const searchAdvocates = useAdvocateStore((state) => state.searchAdvocates);
+  const loadAllAdvocates = useAdvocateStore((state) => state.loadAllAdvocates);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);

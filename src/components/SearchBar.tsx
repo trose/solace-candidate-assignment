@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import { useAdvocateActions } from "../stores/advocateStore";
+import React, { useState, useCallback } from "react";
+import { useDebouncedCallback } from "use-debounce";
+import { useAdvocateStore } from "../stores/advocateStore";
 import { SearchInput } from "./SearchInput";
 
 interface SearchBarProps {
@@ -14,47 +15,32 @@ interface SearchBarProps {
  */
 export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
   const [searchValue, setSearchValue] = useState('');
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Use Zustand store
-  const { setFilters, setPagination, searchAdvocates, loadAllAdvocates } = useAdvocateActions();
+  // Use Zustand store actions (stable selectors)
+  const setFilters = useAdvocateStore((state) => state.setFilters);
+  const setPagination = useAdvocateStore((state) => state.setPagination);
+  const searchAdvocates = useAdvocateStore((state) => state.searchAdvocates);
+  const loadAllAdvocates = useAdvocateStore((state) => state.loadAllAdvocates);
+
+  const debouncedSearch = useDebouncedCallback((value: string) => {
+    setFilters({ search: value });
+    setPagination({ currentPage: 1 });
+
+    if (value.trim()) {
+      searchAdvocates({
+        search: value,
+        limit: 25,
+        offset: 0,
+      });
+    } else {
+      loadAllAdvocates();
+    }
+  }, 1000);
 
   const handleSearchChange = useCallback((value: string) => {
     setSearchValue(value);
-
-    // Clear existing timeout
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    // Debounce search to prevent focus loss
-    searchTimeoutRef.current = setTimeout(() => {
-      // Update filters and trigger search
-      setFilters({ search: value });
-      setPagination({ currentPage: 1 });
-
-      if (value.trim()) {
-        // Search with the query
-        searchAdvocates({
-          search: value,
-          limit: 25,
-          offset: 0,
-        });
-      } else {
-        // Load all advocates if search is empty
-        loadAllAdvocates();
-      }
-    }, 300); // 300ms debounce
-  }, [setFilters, setPagination, searchAdvocates, loadAllAdvocates]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, []);
+    debouncedSearch(value);
+  }, [debouncedSearch]);
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">

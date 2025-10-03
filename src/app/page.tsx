@@ -11,9 +11,13 @@ export const dynamic = 'force-dynamic';
  */
 export default async function Home() {
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Solace Advocates</h1>
-      <SearchClientWithStore />
-    </main>
+    <>
+      <header className="w-full bg-brand-green text-white text-3xl font-normal font-mollie py-4 px-4">
+        Solace Advocates
+      </header>
+      <main className="container mx-auto px-4 py-8">
+        <SearchClientWithStore />
+      </main>
+    </>
   );
 }

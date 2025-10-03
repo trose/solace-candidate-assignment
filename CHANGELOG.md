@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2025-10-03
+
+### Added
+
+- **Solace brand integration** with custom colors (#265b4e green, bright green, blue) and fonts (Figtree, Space Mono)
+- **Full-width header** positioned at the top of the page with Solace styling
+- **use-debounce package** for reliable search input debouncing
+
+### Changed
+
+- **Header repositioning** to span full viewport width and top positioning
+- **Search debouncing** migrated from custom setTimeout to useDebouncedCallback
+- **Brand color updates** to match Solace's primary green (#265b4e)
+
+### Fixed
+
+- **Debounce implementation** replaced with battle-tested use-debounce library for better reliability
+
+### Performance
+
+- **Improved debouncing** with automatic cleanup and optimized callback handling
+
 ## [0.3.0] - 2025-10-03
 
 ### Added

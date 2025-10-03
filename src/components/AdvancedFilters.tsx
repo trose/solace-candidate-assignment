@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef } from "react";
-import { useAdvocatesFilters, useAdvocatesPagination, useAdvocateActions } from "../stores/advocateStore";
+import { useAdvocatesFilters, useAdvocatesPagination, useAdvocateStore } from "../stores/advocateStore";
 import { FilterInput } from "./FilterInput";
 import { FilterSelect } from "./FilterSelect";
 
@@ -46,7 +46,11 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
   // Use Zustand store
   const filters = useAdvocatesFilters();
   const pagination = useAdvocatesPagination();
-  const { setFilters, setPagination, searchAdvocates, loadAllAdvocates, resetFilters } = useAdvocateActions();
+  const setFilters = useAdvocateStore((state) => state.setFilters);
+  const setPagination = useAdvocateStore((state) => state.setPagination);
+  const searchAdvocates = useAdvocateStore((state) => state.searchAdvocates);
+  const loadAllAdvocates = useAdvocateStore((state) => state.loadAllAdvocates);
+  const resetFilters = useAdvocateStore((state) => state.resetFilters);
 
   const handleFilterChange = useCallback((field: keyof FilterOptions, value: string) => {
     // Update local state immediately
