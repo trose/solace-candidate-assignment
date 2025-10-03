@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2024-10-03
+
+### Security
+- Removed logging of DATABASE_URL in migration script to prevent credential exposure
+
+### Accessibility
+- Added scope="col" attributes to table headers for improved screen reader navigation
+- Added aria-label to reset button for better context
+- Added aria-hidden="true" to decorative SVG icons
+
+### Code Quality
+- Extracted inline styles to Tailwind CSS classes for better maintainability
+- Added explicit type="text" to input elements for clarity
+- Fixed type assertion in useAdvocates hook with proper validation and error handling
+- Added loading and error states to useAdvocates hook for better UX
+- Simplified onChange handler in SearchClient component
+- Replaced non-semantic br tags with Tailwind flexbox for proper spacing
+- Fixed inconsistent search term usage in search utilities
+
+### Performance
+- Removed redundant cache option in page.tsx (force-dynamic already handles caching)
+
+### Error Handling
+- Added error state UI in page.tsx to display fetch errors to users
+
 ## [0.1.1] - 2024-10-02
 
 ### Added
