@@ -16,7 +16,8 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
   const [searchValue, setSearchValue] = useState('');
 
-  // Use Zustand store actions (stable selectors)
+  // Use Zustand store
+  const filters = useAdvocateStore((state) => state.filters);
   const setFilters = useAdvocateStore((state) => state.setFilters);
   const setPagination = useAdvocateStore((state) => state.setPagination);
   const searchAdvocates = useAdvocateStore((state) => state.searchAdvocates);
@@ -26,12 +27,29 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
     // Filters are already set immediately in handleSearchChange
     setPagination({ currentPage: 1 });
 
-    if (value.trim()) {
-      searchAdvocates({
-        search: value,
-        limit: 25,
-        offset: 0,
-      });
+    const searchParams = {
+      search: value || undefined,
+      city: filters.city || undefined,
+      degree: filters.degree || undefined,
+      minExperience: filters.minExperience || undefined,
+      maxExperience: filters.maxExperience || undefined,
+      specialty: filters.specialty || undefined,
+      limit: 25,
+      offset: 0,
+    };
+
+    // Check if any filters are active
+    const hasActiveFilters = Boolean(
+      searchParams.search ||
+      searchParams.city ||
+      searchParams.degree ||
+      searchParams.minExperience ||
+      searchParams.maxExperience ||
+      searchParams.specialty
+    );
+
+    if (hasActiveFilters) {
+      searchAdvocates(searchParams);
     } else {
       loadAllAdvocates();
     }
@@ -42,6 +60,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
     setFilters({ search: value }); // Update filters immediately for AND logic with other filters
     debouncedSearch(value);
   }, [setFilters, debouncedSearch]);
+
+  // Note: debouncedSearch depends on filters, but since it's debounced, it captures the current filters at call time
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
