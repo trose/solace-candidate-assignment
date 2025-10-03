@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useAdvocatesFilters, useAdvocatesPagination, useAdvocateStore } from "../stores/advocateStore";
 import { FilterInput } from "./FilterInput";
 import { FilterSelect } from "./FilterSelect";
@@ -34,21 +34,8 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     specialty: ''
   });
 
-  // Use Zustand store
-  const filters = useAdvocatesFilters();
-
   const [isExpanded, setIsExpanded] = useState(false);
-
-  // Sync local state with store filters on mount and when filters change
-  useEffect(() => {
-    setFilterState({
-      city: filters.city,
-      degree: filters.degree,
-      minExperience: filters.minExperience,
-      maxExperience: filters.maxExperience,
-      specialty: filters.specialty,
-    });
-  }, [filters]);
+  const filters = useAdvocatesFilters();
   const pagination = useAdvocatesPagination();
   const setFilters = useAdvocateStore((state) => state.setFilters);
   const setPagination = useAdvocateStore((state) => state.setPagination);
@@ -94,7 +81,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     } else {
       loadAllAdvocates();
     }
-  }, [setFilters, setPagination, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, filters]);
+  }, [setFilters, setPagination, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage]);
 
   const handleReset = useCallback(() => {
     const resetState = {
