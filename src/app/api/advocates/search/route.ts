@@ -4,6 +4,12 @@ import { Advocate } from "../../../../types/advocate";
 import { sql, ilike, or, and, gte, lte } from "drizzle-orm";
 import { cache, cacheKeys } from "../../../../utils/cache";
 
+/**
+ * GET /api/advocates/search
+ * Advanced search endpoint with filtering, pagination, and caching
+ * @param request - The incoming request with search parameters
+ * @returns JSON response with advocates array, total count, and pagination info
+ */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -15,6 +21,20 @@ export async function GET(request: Request) {
     const specialty = searchParams.get('specialty');
     const limit = searchParams.get('limit');
     const offset = searchParams.get('offset');
+
+    // Validate numeric parameters
+    if (minExperience && isNaN(parseInt(minExperience))) {
+      return Response.json({ error: 'minExperience must be a valid number' }, { status: 400 });
+    }
+    if (maxExperience && isNaN(parseInt(maxExperience))) {
+      return Response.json({ error: 'maxExperience must be a valid number' }, { status: 400 });
+    }
+    if (limit && (isNaN(parseInt(limit)) || parseInt(limit) < 1)) {
+      return Response.json({ error: 'limit must be a positive number' }, { status: 400 });
+    }
+    if (offset && (isNaN(parseInt(offset)) || parseInt(offset) < 0)) {
+      return Response.json({ error: 'offset must be a non-negative number' }, { status: 400 });
+    }
 
     // Create cache key from search parameters
     const cacheKey = cacheKeys.advocates.search({

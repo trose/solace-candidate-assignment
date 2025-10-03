@@ -4,6 +4,12 @@ import { Advocate } from "../../../types/advocate";
 import { sql, ilike, or, and, gte, lte } from "drizzle-orm";
 import { cache, cacheKeys } from "../../../utils/cache";
 
+/**
+ * GET /api/advocates
+ * Fetches advocates with optional filtering and caching
+ * @param request - The incoming request with search parameters
+ * @returns JSON response with advocates array
+ */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -13,6 +19,14 @@ export async function GET(request: Request) {
     const minExperience = searchParams.get('minExperience');
     const maxExperience = searchParams.get('maxExperience');
     const specialty = searchParams.get('specialty');
+
+    // Validate numeric parameters
+    if (minExperience && isNaN(parseInt(minExperience))) {
+      return Response.json({ error: 'minExperience must be a valid number' }, { status: 400 });
+    }
+    if (maxExperience && isNaN(parseInt(maxExperience))) {
+      return Response.json({ error: 'maxExperience must be a valid number' }, { status: 400 });
+    }
 
     // Create cache key from search parameters
     const cacheKey = cacheKeys.advocates.search({

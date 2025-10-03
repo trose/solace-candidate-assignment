@@ -3,6 +3,11 @@ import { advocates } from "../../../db/schema";
 import { advocateData } from "../../../db/seed/advocates";
 import { cache } from "../../../utils/cache";
 
+/**
+ * POST /api/seed
+ * Seeds the database with advocate data using PostgreSQL upsert
+ * @returns JSON response with seeding statistics
+ */
 export async function POST() {
   try {
     let insertedCount = 0;
@@ -33,7 +38,7 @@ export async function POST() {
         // Check if this was an insert or update by comparing created_at
         // If created_at is very recent (within last second), it was likely an insert
         const now = new Date();
-        const createdAt = new Date(result.createdAt);
+        const createdAt = result.createdAt ? new Date(result.createdAt) : now;
         const timeDiff = now.getTime() - createdAt.getTime();
 
         if (timeDiff < 1000) {
