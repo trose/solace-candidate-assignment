@@ -3,12 +3,6 @@
  * In production, consider using Redis or similar distributed cache
  */
 
-// Extend globalThis interface for cache cleanup interval
-declare global {
-  // eslint-disable-next-line no-var
-  var __cacheCleanupInterval: NodeJS.Timeout | null | undefined;
-}
-
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
@@ -150,10 +144,13 @@ startCleanupInterval();
 // Store cleanup functions on globalThis for Next.js hot reload handling
 if (typeof globalThis !== 'undefined') {
   // Clear existing interval on module reload
-  if (globalThis.__cacheCleanupInterval) {
-    clearInterval(globalThis.__cacheCleanupInterval);
+  const globalCache = globalThis as typeof globalThis & {
+    __cacheCleanupInterval?: NodeJS.Timeout | null;
+  };
+  if (globalCache.__cacheCleanupInterval) {
+    clearInterval(globalCache.__cacheCleanupInterval);
   }
-  globalThis.__cacheCleanupInterval = cleanupInterval;
+  globalCache.__cacheCleanupInterval = cleanupInterval;
 }
 
 export { cache, stopCleanupInterval };
