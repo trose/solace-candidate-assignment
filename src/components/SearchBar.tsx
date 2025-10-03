@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { useAdvocateActions } from "../stores/advocateStore";
+import { useAdvocateStore } from "../stores/advocateStore";
 import { SearchInput } from "./SearchInput";
 
 interface SearchBarProps {
@@ -16,8 +16,11 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
   const [searchValue, setSearchValue] = useState('');
 
-  // Use Zustand store
-  const { setFilters, setPagination, searchAdvocates, loadAllAdvocates } = useAdvocateActions();
+  // Use Zustand store actions (stable selectors)
+  const setFilters = useAdvocateStore((state) => state.setFilters);
+  const setPagination = useAdvocateStore((state) => state.setPagination);
+  const searchAdvocates = useAdvocateStore((state) => state.searchAdvocates);
+  const loadAllAdvocates = useAdvocateStore((state) => state.loadAllAdvocates);
 
   const debouncedSearch = useDebouncedCallback((value: string) => {
     setFilters({ search: value });
