@@ -3,10 +3,10 @@
  * In production, consider using Redis or similar distributed cache
  */
 
-// Global type declaration for cleanup interval
+// Extend globalThis interface for cache cleanup interval
 declare global {
   // eslint-disable-next-line no-var
-  var __cacheCleanupInterval: NodeJS.Timeout | undefined;
+  var __cacheCleanupInterval: NodeJS.Timeout | null | undefined;
 }
 
 interface CacheEntry<T> {
@@ -96,11 +96,11 @@ class MemoryCache {
    */
   cleanup(): void {
     const now = Date.now();
-    for (const [key, entry] of this.cache.entries()) {
+    this.cache.forEach((entry, key) => {
       if (now - entry.timestamp > entry.ttl) {
         this.cache.delete(key);
       }
-    }
+    });
   }
 
   /**
@@ -124,7 +124,7 @@ const cache = new MemoryCache();
 
 // Clean up expired entries every 10 minutes
 // Store interval handle to prevent memory leaks in Next.js
-let cleanupInterval: NodeJS.Timeout | null = null;
+let cleanupInterval: NodeJS.Timeout | null | undefined = null;
 
 function startCleanupInterval() {
   // Clear any existing interval to prevent duplicates
@@ -140,7 +140,7 @@ function startCleanupInterval() {
 function stopCleanupInterval() {
   if (cleanupInterval) {
     clearInterval(cleanupInterval);
-    cleanupInterval = null;
+    cleanupInterval = undefined;
   }
 }
 
@@ -166,4 +166,7 @@ export const cacheKeys = {
     byId: (id: number) => `advocates:id:${id}`,
   },
 } as const;
+
+// Make this file a module to enable global declarations
+export {};
 
