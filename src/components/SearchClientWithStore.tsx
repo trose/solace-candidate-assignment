@@ -146,14 +146,29 @@ export function SearchClientWithStore() {
 
   const handleAdvocateSubmit = useCallback(async (data: AdvocateFormInput) => {
     try {
-      // Here you would typically make an API call to create the advocate
-      // For now, we'll just close the modal and refresh the data
-      console.log('New advocate data:', data);
+      const response = await fetch('/api/advocates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create advocate');
+      }
+
+      const result = await response.json();
+      console.log('Advocate created successfully:', result);
+      
+      // Close modal and refresh the advocates list
       setIsModalOpen(false);
-      // Refresh the advocates list
       loadAllAdvocates();
     } catch (error) {
       console.error('Error creating advocate:', error);
+      // You might want to show an error message to the user here
+      alert(`Error creating advocate: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }, [loadAllAdvocates]);
 

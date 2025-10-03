@@ -1,8 +1,10 @@
-import db from "../../../db";
-import { advocates } from "../../../db/schema";
-import { Advocate } from "../../../types/advocate";
-import { sql, ilike, or, and, gte, lte, type SQL } from "drizzle-orm";
-import { cache, cacheKeys } from "../../../utils/cache";
+import { NextRequest, NextResponse } from 'next/server';
+import db from '../../../db';
+import { advocates } from '../../../db/schema';
+import { Advocate } from '../../../types/advocate';
+import { AdvocateFormInput } from '../../../schemas/advocateSchemas';
+import { sql, ilike, or, and, gte, lte, type SQL } from 'drizzle-orm';
+import { cache, cacheKeys } from '../../../utils/cache';
 
 /**
  * Handle GET requests to fetch advocates filtered by URL search parameters and return the results as JSON.
@@ -114,5 +116,93 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('Error fetching advocates:', error);
     return Response.json({ error: 'Failed to fetch advocates' }, { status: 500 });
+  }
+}
+
+/**
+ * Handle POST requests to create a new advocate
+ * 
+ * @param request - The incoming HTTP request containing advocate data in the body
+ * @returns A JSON Response containing the created advocate on success, or an error message on failure
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    
+    // Validate required fields
+    const { firstName, lastName, city, degree, specialties, yearsOfExperience, phoneNumber } = body;
+    
+    if (!firstName || !lastName || !city || !degree || !specialties || yearsOfExperience === undefined || !phoneNumber) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // Validate specialties is an array
+    if (!Array.isArray(specialties) || specialties.length === 0) {
+      return NextResponse.json(
+        { error: 'Specialties must be a non-empty array' },
+        { status: 400 }
+      );
+    }
+
+    // Validate years of experience is a number
+    if (typeof yearsOfExperience !== 'number' || yearsOfExperience < 0) {
+      return NextResponse.json(
+        { error: 'Years of experience must be a non-negative number' },
+        { status: 400 }
+      );
+    }
+
+    // Validate phone number (convert to number if it's a string)
+    const phoneNumberValue = typeof phoneNumber === 'string' 
+      ? parseInt(phoneNumber.replace(/\D/g, ''), 10) 
+      : phoneNumber;
+    
+    if (isNaN(phoneNumberValue) || phoneNumberValue <= 0) {
+      return NextResponse.json(
+        { error: 'Phone number must be a valid number' },
+        { status: 400 }
+      );
+    }
+
+    // Create the advocate
+    const [newAdvocate] = await db
+      .insert(advocates)
+      .values({
+        firstName,
+        lastName,
+        city,
+        degree,
+        specialties,
+        yearsOfExperience,
+        phoneNumber: phoneNumberValue,
+      })
+      .returning();
+
+    // Clear cache to ensure fresh data
+    await cache.clear();
+
+    return NextResponse.json({ 
+      message: 'Advocate created successfully',
+      advocate: newAdvocate 
+    }, { status: 201 });
+
+  } catch (error) {
+    console.error('Error creating advocate:', error);
+    
+    // Handle unique constraint violation
+    if (error instanceof Error && error.message.includes('advocates_unique_name_idx')) {
+      return NextResponse.json(
+        { error: 'An advocate with this name already exists' },
+        { status: 409 }
+      );
+    }
+    
+    return NextResponse.json(
+      { error: 'Failed to create advocate' },
+      { status: 500 }
+    );
   }
 }
