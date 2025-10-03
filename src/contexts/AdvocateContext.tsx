@@ -171,12 +171,17 @@ export function AdvocateProvider({ children }: { children: ReactNode }) {
       const result = await response.json();
       setAdvocates(result.advocates);
       setTotal(result.total);
+
+      // Map API response to pagination state
+      const itemsPerPage = result.limit || state.pagination.itemsPerPage;
+      const currentPage = result.offset ? Math.floor(result.offset / itemsPerPage) + 1 : state.pagination.currentPage;
+
       dispatch({
         type: 'SET_PAGINATION',
         payload: {
           totalItems: result.total,
-          limit: result.limit || state.pagination.itemsPerPage,
-          offset: result.offset || 0,
+          itemsPerPage: itemsPerPage,
+          currentPage: currentPage,
         }
       });
     } catch (err) {
@@ -186,7 +191,7 @@ export function AdvocateProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [setLoading, setError, setAdvocates, setTotal, state.pagination.itemsPerPage]);
+  }, [setLoading, setError, setAdvocates, setTotal, state.pagination.itemsPerPage, state.pagination.currentPage, dispatch]);
 
   const loadAllAdvocates = useCallback(async () => {
     setLoading(true);
