@@ -9,16 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        solace: {
-          green: 'var(--solace-green)',
-          brightGreen: 'var(--solace-bright-green)',
-          blue: 'var(--solace-blue)',
+        brand: {
+          green: 'var(--brand-green)',
+          brightGreen: 'var(--brand-bright-green)',
+          blue: 'var(--brand-blue)',
         },
       },
       fontFamily: {
         sans: ['Figtree', 'sans-serif'],
         mono: ['Space Mono', 'monospace'],
-        mollie: ['Mollie Glaston', 'sans-serif'],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

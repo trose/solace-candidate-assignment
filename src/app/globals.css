@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 :root {
-  --solace-green: #265b4e;
-  --solace-bright-green: #00c895;
-  --solace-blue: #093B5F;
+  --brand-green: #265b4e;
+  --brand-bright-green: #00c895;
+  --brand-blue: #093B5F;
 }
