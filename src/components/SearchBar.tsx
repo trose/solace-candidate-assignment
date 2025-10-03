@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { useAdvocateContext } from "../contexts/AdvocateContext";
+import { useAdvocatesFilters, useAdvocateActions } from "../stores/advocateStore";
 import { SearchInput } from "./SearchInput";
 
 interface SearchBarProps {
@@ -16,8 +16,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
   const [searchValue, setSearchValue] = useState('');
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Use context for state management
-  const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates } = useAdvocateContext();
+  // Use Zustand store
+  const filters = useAdvocatesFilters();
+  const { setFilters, setPagination, searchAdvocates, loadAllAdvocates } = useAdvocateActions();
 
   const handleSearchChange = useCallback((value: string) => {
     setSearchValue(value);
@@ -31,7 +32,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
     searchTimeoutRef.current = setTimeout(() => {
       // Update filters and trigger search
       setFilters({ search: value });
-      setCurrentPage(1);
+      setPagination({ currentPage: 1 });
 
       if (value.trim()) {
         // Search with the query
@@ -45,7 +46,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
         loadAllAdvocates();
       }
     }, 300); // 300ms debounce
-  }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates]);
+  }, [setFilters, setPagination, searchAdvocates, loadAllAdvocates]);
 
   // Cleanup timeout on unmount
   useEffect(() => {

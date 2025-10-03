@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useEffect, useState } from "react";
-import { useAdvocates, useAdvocatesLoading, useAdvocatesError, useAdvocatesPagination, useAdvocatesFilters, useAdvocateContext } from "../contexts/AdvocateContext";
+import { useAdvocates, useAdvocatesLoading, useAdvocatesError, useAdvocatesPagination, useAdvocatesFilters, useAdvocateActions } from "../stores/advocateStore";
 import { SearchBar } from "./SearchBar";
 import { AdvancedFilters } from "./AdvancedFilters";
 import { AdvocateTable } from "./AdvocateTable";
@@ -30,8 +30,8 @@ export function SearchClientWithStore() {
   const error = useAdvocatesError();
   const pagination = useAdvocatesPagination();
   const filters = useAdvocatesFilters();
-  // Use context for state management
-  const { setCurrentPage, searchAdvocates, loadAllAdvocates, setItemsPerPage } = useAdvocateContext();
+  // Zustand store actions
+  const { setPagination, searchAdvocates, loadAllAdvocates } = useAdvocateActions();
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,7 +60,7 @@ export function SearchClientWithStore() {
   // Note: Filter handling is now managed by SearchBar and AdvancedFilters components
 
   const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
+    setPagination({ currentPage: page });
 
     // Trigger search with new pagination
     const offset = (page - 1) * pagination.itemsPerPage;
@@ -85,11 +85,10 @@ export function SearchClientWithStore() {
     } else {
       loadAllAdvocates();
     }
-  }, [setCurrentPage, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, filters]);
+  }, [setPagination, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, filters]);
 
   const handleItemsPerPageChange = useCallback((newItemsPerPage: number) => {
-    setItemsPerPage(newItemsPerPage);
-    setCurrentPage(1);
+    setPagination({ itemsPerPage: newItemsPerPage, currentPage: 1 });
 
     // Trigger search with new items per page
     const searchParams = {
@@ -111,7 +110,7 @@ export function SearchClientWithStore() {
     } else {
       loadAllAdvocates();
     }
-  }, [setItemsPerPage, setCurrentPage, searchAdvocates, loadAllAdvocates, filters]);
+  }, [setPagination, searchAdvocates, loadAllAdvocates, filters]);
 
   const handleAdvocateSubmit = useCallback(async (data: AdvocateFormInput) => {
     try {

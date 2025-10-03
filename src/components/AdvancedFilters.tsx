@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef } from "react";
-import { useAdvocateContext } from "../contexts/AdvocateContext";
+import { useAdvocatesFilters, useAdvocatesPagination, useAdvocateActions } from "../stores/advocateStore";
 import { FilterInput } from "./FilterInput";
 import { FilterSelect } from "./FilterSelect";
 
@@ -43,8 +43,10 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     specialty: ''
   });
 
-  // Use context for state management
-  const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters, pagination, filters } = useAdvocateContext();
+  // Use Zustand store
+  const filters = useAdvocatesFilters();
+  const pagination = useAdvocatesPagination();
+  const { setFilters, setPagination, searchAdvocates, loadAllAdvocates, resetFilters } = useAdvocateActions();
 
   const handleFilterChange = useCallback((field: keyof FilterOptions, value: string) => {
     // Update local state immediately
@@ -62,7 +64,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
 
     // Update store and search immediately for filters (no debouncing needed)
     setFilters({ [field]: value });
-    setCurrentPage(1);
+    setPagination({ currentPage: 1 });
 
     const searchParams = {
       search: filters.search || undefined, // Include current search term
@@ -90,7 +92,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     } else {
       loadAllAdvocates();
     }
-  }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, filters.search]);
+  }, [setFilters, setPagination, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, filters.search]);
 
   const handleReset = useCallback(() => {
     const resetState = {
@@ -105,9 +107,9 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     currentFiltersRef.current = resetState;
     setFilterState(resetState);
     resetFilters();
-    setCurrentPage(1);
+    setPagination({ currentPage: 1 });
     loadAllAdvocates();
-  }, [resetFilters, setCurrentPage, loadAllAdvocates]);
+  }, [resetFilters, setPagination, loadAllAdvocates]);
 
   const hasActiveFilters = Object.values(filterState).some(value => value.trim() !== '');
 
