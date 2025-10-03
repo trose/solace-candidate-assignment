@@ -23,7 +23,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
   const loadAllAdvocates = useAdvocateStore((state) => state.loadAllAdvocates);
 
   const debouncedSearch = useDebouncedCallback((value: string) => {
-    setFilters({ search: value });
+    // Filters are already set immediately in handleSearchChange
     setPagination({ currentPage: 1 });
 
     if (value.trim()) {
@@ -39,8 +39,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
 
   const handleSearchChange = useCallback((value: string) => {
     setSearchValue(value);
+    setFilters({ search: value }); // Update filters immediately for AND logic with other filters
     debouncedSearch(value);
-  }, [debouncedSearch]);
+  }, [setFilters, debouncedSearch]);
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
