@@ -1,3 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Space+Mono:wght@700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --solace-green: #3dba91;
+  --solace-bright-green: #00c895;
+  --solace-blue: #093B5F;
+}

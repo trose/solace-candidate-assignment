@@ -8,6 +8,17 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        solace: {
+          green: 'var(--solace-green)',
+          brightGreen: 'var(--solace-bright-green)',
+          blue: 'var(--solace-blue)',
+        },
+      },
+      fontFamily: {
+        sans: ['Figtree', 'sans-serif'],
+        mono: ['Space Mono', 'monospace'],
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
