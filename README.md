@@ -24,18 +24,37 @@ Set up Git hooks for code quality enforcement:
 npm run prepare
 ```
 
-## Database set up
+## Database and Redis Setup
 
-The app is configured to return a default list of advocates. This will allow you to get the app up and running without needing to configure a database. If you’d like to configure a database, you’re encouraged to do so. You can uncomment the url in `.env` and the line in `src/app/api/advocates/route.ts` to test retrieving advocates from the database.
+The app is configured to return a default list of advocates. This will allow you to get the app up and running without needing to configure a database. If you'd like to configure a database, you're encouraged to do so. You can uncomment the url in `.env` and the line in `src/app/api/advocates/route.ts` to test retrieving advocates from the database.
 
-1. Feel free to use whatever configuration of postgres you like. The project is set up to use docker-compose.yml to set up postgres. The url is in .env.
+### Environment Variables
+
+Create a `.env` file with the following variables:
+
+```bash
+# Database Configuration
+DATABASE_URL=postgresql://postgres:password@localhost:5432/solaceassignment
+
+# Redis Configuration (optional - defaults to localhost:6379)
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
+
+# Application Configuration
+NODE_ENV=development
+```
+
+### Setup Steps
+
+1. Start PostgreSQL and Redis using Docker Compose:
 
 ```bash
 docker compose up -d
 ```
 
 2. Create a `solaceassignment` database.
-
 3. Push migration to the database
 
 ```bash

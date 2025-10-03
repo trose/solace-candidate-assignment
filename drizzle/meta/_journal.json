@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1759457650770,
+      "tag": "0000_plain_sharon_carter",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1759459429142,
+      "tag": "0001_low_apocalypse",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759460151354,
+      "tag": "0002_hot_the_twelve",
+      "breakpoints": true
+    }
+  ]
+}

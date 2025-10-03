@@ -1,16 +1,17 @@
-import db from "../../../db";
-import { advocates } from "../../../db/schema";
-import { Advocate } from "../../../types/advocate";
+import db from "../../../../db";
+import { advocates } from "../../../../db/schema";
+import { Advocate } from "../../../../types/advocate";
 import { sql, ilike, or, and, gte, lte, type SQL } from "drizzle-orm";
-import { cache, cacheKeys } from "../../../utils/cache";
+import { cache, cacheKeys } from "../../../../utils/cache";
 
 /**
- * Handle GET requests to fetch advocates filtered by URL search parameters and return the results as JSON.
+ * Handle GET requests to search advocates using optional filters, pagination, and caching.
  *
- * Supported query parameters: `search`, `city`, `degree`, `minExperience`, `maxExperience`, and `specialty`. Results are cached for 5 minutes keyed by the provided parameters.
+ * Performs a filtered search over advocates (by search text, city, degree, years of experience, and specialty),
+ * applies limit/offset pagination, caches the result for 5 minutes, and returns the matching advocates and total count.
  *
- * @param request - The incoming HTTP request whose URL search parameters drive the filter criteria
- * @returns A JSON Response containing `{ advocates: Advocate[] }` on success, or `{ error: 'Failed to fetch advocates' }` with status 500 on failure
+ * @returns The successful response body: `{ advocates: Advocate[], total: number, limit: number | null, offset: number | null }`.
+ *          On failure returns an error object `{ error: string }` with a 500 status.
  */
 export async function GET(request: Request) {
   try {
@@ -21,6 +22,8 @@ export async function GET(request: Request) {
     const minExperience = searchParams.get('minExperience');
     const maxExperience = searchParams.get('maxExperience');
     const specialty = searchParams.get('specialty');
+    const limit = searchParams.get('limit');
+    const offset = searchParams.get('offset');
 
     // Validate numeric parameters
     if (minExperience && isNaN(parseInt(minExperience))) {
@@ -28,6 +31,12 @@ export async function GET(request: Request) {
     }
     if (maxExperience && isNaN(parseInt(maxExperience))) {
       return Response.json({ error: 'maxExperience must be a valid number' }, { status: 400 });
+    }
+    if (limit && (isNaN(parseInt(limit)) || parseInt(limit) < 1)) {
+      return Response.json({ error: 'limit must be a positive number' }, { status: 400 });
+    }
+    if (offset && (isNaN(parseInt(offset)) || parseInt(offset) < 0)) {
+      return Response.json({ error: 'offset must be a non-negative number' }, { status: 400 });
     }
 
     // Create cache key from search parameters
@@ -38,12 +47,14 @@ export async function GET(request: Request) {
       minExperience: minExperience || '',
       maxExperience: maxExperience || '',
       specialty: specialty || '',
+      limit: limit || '',
+      offset: offset || '',
     });
 
     // Check cache first
-    const cachedResult = await cache.get<Advocate[]>(cacheKey);
+    const cachedResult = await cache.get<{advocates: Advocate[], total: number}>(cacheKey);
     if (cachedResult) {
-      return Response.json({ advocates: cachedResult });
+      return Response.json(cachedResult);
     }
 
     // Build dynamic where conditions
@@ -83,12 +94,39 @@ export async function GET(request: Request) {
       conditions.push(sql`${advocates.specialties} @> ARRAY[${specialty}]`);
     }
 
-    // Build and execute query
+    // Get total count for pagination
+    let countResult;
+    if (conditions.length > 0) {
+      countResult = await db.select({ count: sql<number>`count(*)` }).from(advocates).where(and(...conditions));
+    } else {
+      countResult = await db.select({ count: sql<number>`count(*)` }).from(advocates);
+    }
+    const count = countResult[0].count;
+
+    // Build and execute query with pagination
     let data;
     if (conditions.length > 0) {
-      data = await db.select().from(advocates).where(and(...conditions));
+      const baseQuery = db.select().from(advocates).where(and(...conditions));
+      if (limit && offset) {
+        data = await baseQuery.limit(parseInt(limit)).offset(parseInt(offset));
+      } else if (limit) {
+        data = await baseQuery.limit(parseInt(limit));
+      } else if (offset) {
+        data = await baseQuery.offset(parseInt(offset));
+      } else {
+        data = await baseQuery;
+      }
     } else {
-      data = await db.select().from(advocates);
+      const baseQuery = db.select().from(advocates);
+      if (limit && offset) {
+        data = await baseQuery.limit(parseInt(limit)).offset(parseInt(offset));
+      } else if (limit) {
+        data = await baseQuery.limit(parseInt(limit));
+      } else if (offset) {
+        data = await baseQuery.offset(parseInt(offset));
+      } else {
+        data = await baseQuery;
+      }
     }
 
     // Drizzle maps snake_case to camelCase automatically
@@ -107,12 +145,19 @@ export async function GET(request: Request) {
       };
     });
 
-    // Cache the result for 5 minutes
-    await cache.set(cacheKey, mappedAdvocates, 5 * 60);
+    const result = {
+      advocates: mappedAdvocates,
+      total: count,
+      limit: limit ? parseInt(limit) : null,
+      offset: offset ? parseInt(offset) : null
+    };
 
-    return Response.json({ advocates: mappedAdvocates });
+    // Cache the result for 5 minutes
+    await cache.set(cacheKey, result, 5 * 60);
+
+    return Response.json(result);
   } catch (error) {
-    console.error('Error fetching advocates:', error);
-    return Response.json({ error: 'Failed to fetch advocates' }, { status: 500 });
+    console.error('Error searching advocates:', error);
+    return Response.json({ error: 'Failed to search advocates' }, { status: 500 });
   }
 }

@@ -10,5 +10,16 @@ services:
       - psql:/var/lib/postgresql/data
     ports:
       - 5432:5432
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis:/data
+    ports:
+      - 6379:6379
+
 volumes:
   psql:
+  redis:
