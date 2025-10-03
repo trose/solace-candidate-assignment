@@ -1,0 +1,203 @@
+{
+  "id": "10b1db45-3bac-4561-8e98-09ea818bcbf9",
+  "prevId": "1ebb728f-3a5b-4c26-aefa-7a309e6bcc57",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.advocates": {
+      "name": "advocates",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "city": {
+          "name": "city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "degree": {
+          "name": "degree",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "specialties": {
+          "name": "specialties",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'"
+        },
+        "years_of_experience": {
+          "name": "years_of_experience",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone_number": {
+          "name": "phone_number",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {
+        "advocates_first_name_idx": {
+          "name": "advocates_first_name_idx",
+          "columns": [
+            {
+              "expression": "first_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "advocates_last_name_idx": {
+          "name": "advocates_last_name_idx",
+          "columns": [
+            {
+              "expression": "last_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "advocates_city_idx": {
+          "name": "advocates_city_idx",
+          "columns": [
+            {
+              "expression": "city",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "advocates_degree_idx": {
+          "name": "advocates_degree_idx",
+          "columns": [
+            {
+              "expression": "degree",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "advocates_years_of_experience_idx": {
+          "name": "advocates_years_of_experience_idx",
+          "columns": [
+            {
+              "expression": "years_of_experience",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "advocates_full_name_idx": {
+          "name": "advocates_full_name_idx",
+          "columns": [
+            {
+              "expression": "first_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "last_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "advocates_specialties_idx": {
+          "name": "advocates_specialties_idx",
+          "columns": [
+            {
+              "expression": "specialties",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "advocates_unique_name_idx": {
+          "name": "advocates_unique_name_idx",
+          "nullsNotDistinct": false,
+          "columns": [
+            "first_name",
+            "last_name"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

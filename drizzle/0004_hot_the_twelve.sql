@@ -1,0 +1,1 @@
+ALTER TABLE "advocates" ADD CONSTRAINT "advocates_unique_name_idx" UNIQUE("first_name","last_name");
