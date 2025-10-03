@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 
 interface FilterOptions {
   search: string;
@@ -40,16 +40,18 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleFilterChange = (field: keyof FilterOptions, value: string) => {
-    const newFilterState = {
-      ...filterState,
-      [field]: value
-    };
-    setFilterState(newFilterState);
-    onFiltersChange(newFilterState);
-  };
+  const handleFilterChange = useCallback((field: keyof FilterOptions, value: string) => {
+    setFilterState(prevState => {
+      const newFilterState = {
+        ...prevState,
+        [field]: value
+      };
+      onFiltersChange(newFilterState);
+      return newFilterState;
+    });
+  }, [onFiltersChange]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     const resetState = {
       search: '',
       city: '',
@@ -61,7 +63,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
     setFilterState(resetState);
     onFiltersChange(resetState);
     onReset();
-  };
+  }, [onFiltersChange, onReset]);
 
   const hasActiveFilters = Object.values(filterState).some(value => value.trim() !== '');
 
@@ -96,6 +98,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           Search
         </label>
         <input
+          key="search-input"
           id="search-input"
           type="text"
           className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
