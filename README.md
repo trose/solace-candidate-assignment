@@ -55,7 +55,6 @@ docker compose up -d
 ```
 
 2. Create a `solaceassignment` database.
-
 3. Push migration to the database
 
 ```bash
@@ -67,17 +66,3 @@ npx drizzle-kit push
 ```bash
 curl -X POST http://localhost:3000/api/seed
 ```
-
-### Redis Caching
-
-The application now uses Redis for distributed caching to improve performance. Redis is automatically started with Docker Compose and provides:
-
-- **Distributed caching** across multiple application instances
-- **Automatic TTL** (Time To Live) for cache entries
-- **Connection resilience** with automatic reconnection
-- **Graceful fallback** when Redis is unavailable
-
-Cache keys are automatically generated for:
-- All advocates: `advocates:all`
-- Search results: `advocates:search:{params}`
-- Individual advocates: `advocates:id:{id}`
