@@ -34,9 +34,15 @@ interface SearchResult {
 }
 
 /**
- * Custom hook for advocate search functionality
- * Provides search, loading states, and error handling
- * @returns Object with advocates, loading state, error state, and search functions
+ * Provides state and actions for fetching and searching advocates from the API.
+ *
+ * @returns An object containing:
+ * - `advocates` — the current list of advocates
+ * - `loading` — whether a fetch is in progress
+ * - `error` — an error message if the last operation failed, or `null`
+ * - `total` — total number of advocates matching the last fetch
+ * - `searchAdvocates` — function accepting `SearchParams` to perform a server-side search and update the state
+ * - `loadAllAdvocates` — function to load all advocates and update the state
  */
 export function useAdvocateSearch() {
   const [advocates, setAdvocates] = useState<Advocate[]>([]);

@@ -5,10 +5,13 @@ import { sql, ilike, or, and, gte, lte } from "drizzle-orm";
 import { cache, cacheKeys } from "../../../../utils/cache";
 
 /**
- * GET /api/advocates/search
- * Advanced search endpoint with filtering, pagination, and caching
- * @param request - The incoming request with search parameters
- * @returns JSON response with advocates array, total count, and pagination info
+ * Handle GET requests to search advocates using optional filters, pagination, and caching.
+ *
+ * Performs a filtered search over advocates (by search text, city, degree, years of experience, and specialty),
+ * applies limit/offset pagination, caches the result for 5 minutes, and returns the matching advocates and total count.
+ *
+ * @returns The successful response body: `{ advocates: Advocate[], total: number, limit: number | null, offset: number | null }`.
+ *          On failure returns an error object `{ error: string }` with a 500 status.
  */
 export async function GET(request: Request) {
   try {

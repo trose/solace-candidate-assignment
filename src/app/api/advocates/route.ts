@@ -5,10 +5,12 @@ import { sql, ilike, or, and, gte, lte } from "drizzle-orm";
 import { cache, cacheKeys } from "../../../utils/cache";
 
 /**
- * GET /api/advocates
- * Fetches advocates with optional filtering and caching
- * @param request - The incoming request with search parameters
- * @returns JSON response with advocates array
+ * Handle GET requests to fetch advocates filtered by URL search parameters and return the results as JSON.
+ *
+ * Supported query parameters: `search`, `city`, `degree`, `minExperience`, `maxExperience`, and `specialty`. Results are cached for 5 minutes keyed by the provided parameters.
+ *
+ * @param request - The incoming HTTP request whose URL search parameters drive the filter criteria
+ * @returns A JSON Response containing `{ advocates: Advocate[] }` on success, or `{ error: 'Failed to fetch advocates' }` with status 500 on failure
  */
 export async function GET(request: Request) {
   try {

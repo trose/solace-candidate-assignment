@@ -4,9 +4,17 @@ import { advocateData } from "../../../db/seed/advocates";
 import { cache } from "../../../utils/cache";
 
 /**
- * POST /api/seed
- * Seeds the database with advocate data using PostgreSQL upsert
- * @returns JSON response with seeding statistics
+ * Seed advocate records by performing per-record upserts and clearing the cache afterward.
+ *
+ * Processes each entry from the seed data: inserts a new advocate or updates fields on conflict
+ * (conflict key: `firstName`, `lastName`). Individual record errors are logged and do not stop
+ * processing of remaining records. After processing, the cache is cleared.
+ *
+ * @returns A Response whose JSON body contains:
+ * - `message`: summary of inserted and updated counts,
+ * - `advocates`: array of resulting advocate records,
+ * - `stats`: object with `inserted`, `updated`, and `total` counts.
+ * On failure returns a 500 Response with an `{ error: 'Failed to seed advocates' }` payload.
  */
 export async function POST() {
   try {
