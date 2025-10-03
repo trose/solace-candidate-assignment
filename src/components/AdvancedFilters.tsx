@@ -90,7 +90,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     } else {
       loadAllAdvocates();
     }
-  }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, pagination.currentPage, filters.search]);
+  }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, filters.search]);
 
   const handleReset = useCallback(() => {
     const resetState = {

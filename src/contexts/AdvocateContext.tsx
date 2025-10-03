@@ -183,7 +183,7 @@ export function AdvocateProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [setLoading, setError, setAdvocates, setTotal, state.pagination.itemsPerPage, state.pagination.currentPage, dispatch]);
+  }, [setLoading, setError, setAdvocates, setTotal, state.pagination.itemsPerPage, dispatch]);
 
   const loadAllAdvocates = useCallback(async () => {
     setLoading(true);
