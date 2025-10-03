@@ -46,10 +46,8 @@ export async function GET(request: Request) {
       return Response.json({ advocates: cachedResult });
     }
 
-    let query = db.select().from(advocates);
-
     // Build dynamic where conditions
-    const conditions = [];
+    const conditions: any[] = [];
 
     if (search) {
       const searchPattern = `%${search.toLowerCase()}%`;
@@ -84,12 +82,13 @@ export async function GET(request: Request) {
       conditions.push(sql`${advocates.specialties} @> ARRAY[${specialty}]`);
     }
 
-    // Apply conditions if any exist
+    // Build and execute query
+    let data;
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      data = await db.select().from(advocates).where(and(...conditions));
+    } else {
+      data = await db.select().from(advocates);
     }
-
-    const data = await query;
 
     // Drizzle maps snake_case to camelCase automatically
     const mappedAdvocates: Advocate[] = data.map((row) => {

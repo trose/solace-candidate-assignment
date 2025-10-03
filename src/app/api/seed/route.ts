@@ -2,6 +2,7 @@ import db from "../../../db";
 import { advocates } from "../../../db/schema";
 import { advocateData } from "../../../db/seed/advocates";
 import { cache } from "../../../utils/cache";
+import { sql } from "drizzle-orm";
 
 /**
  * Seed advocate records by performing per-record upserts and clearing the cache afterward.
@@ -26,6 +27,7 @@ export async function POST() {
     for (const advocate of advocateData) {
       try {
         // Use PostgreSQL's native INSERT ... ON CONFLICT UPDATE
+        // Use xmax system column to detect if row was inserted (xmax = 0) or updated (xmax > 0)
         const [result] = await db
           .insert(advocates)
           .values(advocate)
@@ -39,17 +41,23 @@ export async function POST() {
               phoneNumber: advocate.phoneNumber,
             }
           })
-          .returning();
+          .returning({
+            id: advocates.id,
+            firstName: advocates.firstName,
+            lastName: advocates.lastName,
+            city: advocates.city,
+            degree: advocates.degree,
+            specialties: advocates.specialties,
+            yearsOfExperience: advocates.yearsOfExperience,
+            phoneNumber: advocates.phoneNumber,
+            createdAt: advocates.createdAt,
+            isInsert: sql<boolean>`(xmax = 0)`
+          });
 
         results.push(result);
 
-        // Check if this was an insert or update by comparing created_at
-        // If created_at is very recent (within last second), it was likely an insert
-        const now = new Date();
-        const createdAt = result.createdAt ? new Date(result.createdAt) : now;
-        const timeDiff = now.getTime() - createdAt.getTime();
-
-        if (timeDiff < 1000) {
+        // Use PostgreSQL xmax to determine if this was an insert or update
+        if (result.isInsert) {
           insertedCount++;
         } else {
           updatedCount++;

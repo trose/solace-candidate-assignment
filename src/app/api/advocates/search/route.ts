@@ -60,7 +60,7 @@ export async function GET(request: Request) {
     let query = db.select().from(advocates);
 
     // Build dynamic where conditions
-    const conditions = [];
+    const conditions: any[] = [];
 
     if (search) {
       const searchPattern = `%${search.toLowerCase()}%`;

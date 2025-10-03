@@ -3,6 +3,11 @@
  * In production, consider using Redis or similar distributed cache
  */
 
+// Global type declaration for cleanup interval
+declare global {
+  var __cacheCleanupInterval: NodeJS.Timeout | undefined;
+}
+
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
@@ -117,11 +122,40 @@ class MemoryCache {
 const cache = new MemoryCache();
 
 // Clean up expired entries every 10 minutes
-setInterval(() => {
-  cache.cleanup();
-}, 10 * 60 * 1000);
+// Store interval handle to prevent memory leaks in Next.js
+let cleanupInterval: NodeJS.Timeout | null = null;
 
-export { cache };
+function startCleanupInterval() {
+  // Clear any existing interval to prevent duplicates
+  if (cleanupInterval) {
+    clearInterval(cleanupInterval);
+  }
+  
+  cleanupInterval = setInterval(() => {
+    cache.cleanup();
+  }, 10 * 60 * 1000);
+}
+
+function stopCleanupInterval() {
+  if (cleanupInterval) {
+    clearInterval(cleanupInterval);
+    cleanupInterval = null;
+  }
+}
+
+// Start cleanup interval
+startCleanupInterval();
+
+// Store cleanup functions on globalThis for Next.js hot reload handling
+if (typeof globalThis !== 'undefined') {
+  // Clear existing interval on module reload
+  if (globalThis.__cacheCleanupInterval) {
+    clearInterval(globalThis.__cacheCleanupInterval);
+  }
+  globalThis.__cacheCleanupInterval = cleanupInterval;
+}
+
+export { cache, stopCleanupInterval };
 
 // Cache key generators
 export const cacheKeys = {
