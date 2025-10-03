@@ -12,29 +12,15 @@
     {
       "idx": 1,
       "version": "7",
-      "when": 1759458604828,
-      "tag": "0001_absent_nightshade",
+      "when": 1759459429142,
+      "tag": "0001_low_apocalypse",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "7",
-      "when": 1759459000000,
-      "tag": "0002_convert_specialties_to_text_array",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1759459429142,
-      "tag": "0003_low_apocalypse",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
       "when": 1759460151354,
-      "tag": "0004_hot_the_twelve",
+      "tag": "0002_hot_the_twelve",
       "breakpoints": true
     }
   ]
