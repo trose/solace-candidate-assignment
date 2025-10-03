@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useEffect, useState } from "react";
-import { useAdvocates, useAdvocatesLoading, useAdvocatesError, useAdvocatesPagination, useAdvocatesFilters, useSetFilters, useSetCurrentPage, useSearchAdvocates, useLoadAllAdvocates, useResetFilters, useSetItemsPerPage } from "../stores/advocateStore";
+import { useAdvocates, useAdvocatesLoading, useAdvocatesError, useAdvocatesPagination, useAdvocatesFilters, useAdvocateContext } from "../contexts/AdvocateContext";
 import { AdvancedFilters } from "./AdvancedFilters";
 import { AdvocateTable } from "./AdvocateTable";
 import { Pagination } from "./Pagination";
@@ -29,13 +29,8 @@ export function SearchClientWithStore() {
   const error = useAdvocatesError();
   const pagination = useAdvocatesPagination();
   const filters = useAdvocatesFilters();
-  // Use atomic selectors to prevent unnecessary re-renders
-  const setFilters = useSetFilters();
-  const setCurrentPage = useSetCurrentPage();
-  const searchAdvocates = useSearchAdvocates();
-  const loadAllAdvocates = useLoadAllAdvocates();
-  const resetFilters = useResetFilters();
-  const setItemsPerPage = useSetItemsPerPage();
+  // Use context for state management
+  const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters, setItemsPerPage } = useAdvocateContext();
   
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);

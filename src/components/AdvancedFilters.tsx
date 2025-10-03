@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { useSetFilters, useSetCurrentPage, useSearchAdvocates, useLoadAllAdvocates, useResetFilters } from "../stores/advocateStore";
+import { useAdvocateContext } from "../contexts/AdvocateContext";
 
 interface FilterOptions {
   search: string;
@@ -50,12 +50,8 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     specialty: ''
   });
   
-  // Use atomic selectors to prevent unnecessary re-renders
-  const setFilters = useSetFilters();
-  const setCurrentPage = useSetCurrentPage();
-  const searchAdvocates = useSearchAdvocates();
-  const loadAllAdvocates = useLoadAllAdvocates();
-  const resetFilters = useResetFilters();
+  // Use context for state management
+  const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters } = useAdvocateContext();
   
   const handleFilterChange = useCallback((field: keyof FilterOptions, value: string) => {
     // Update local state immediately

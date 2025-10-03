@@ -132,3 +132,19 @@ export const LazySearchClientWithStore = dynamic(
     ssr: false,
   }
 );
+
+/**
+ * Lazy load the Advocate app with context provider
+ */
+export const LazyAdvocateApp = dynamic(
+  () => import('./AdvocateApp').then(mod => ({ default: mod.AdvocateApp })),
+  {
+    loading: () => (
+      <div className="space-y-6">
+        <div className="animate-pulse bg-gray-200 h-32 w-full rounded"></div>
+        <div className="animate-pulse bg-gray-200 h-64 w-full rounded"></div>
+      </div>
+    ),
+    ssr: false,
+  }
+);
