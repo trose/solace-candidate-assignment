@@ -5,12 +5,6 @@
 
 import Redis from 'ioredis';
 
-interface CacheStats {
-  size: number;
-  keys: string[];
-  hitRate?: number;
-}
-
 class RedisCache {
   private redis: Redis;
   private defaultTTL = 5 * 60; // 5 minutes in seconds (Redis uses seconds)
@@ -151,33 +145,6 @@ class RedisCache {
     } catch (error) {
       console.error('Redis clear error:', error);
     }
-  }
-
-  /**
-   * Get cache statistics including hit rate
-   * @returns Cache statistics
-   */
-  async getStats(): Promise<CacheStats> {
-    const totalRequests = this.hitCount + this.missCount;
-    const hitRate = totalRequests > 0 ? this.hitCount / totalRequests : 0;
-
-    let keys: string[] = [];
-    let size = 0;
-
-    if (this.isConnected) {
-      try {
-        keys = await this.redis.keys('*');
-        size = keys.length;
-      } catch (error) {
-        console.error('Redis stats error:', error);
-      }
-    }
-
-    return {
-      size,
-      keys,
-      hitRate: Math.round(hitRate * 100) / 100, // Round to 2 decimal places
-    };
   }
 
   /**
