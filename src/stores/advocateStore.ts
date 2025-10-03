@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { Advocate } from '../types/advocate';
@@ -26,13 +27,13 @@ interface AdvocateState {
   total: number;
   loading: boolean;
   error: string | null;
-  
+
   // Pagination
   pagination: PaginationState;
-  
+
   // Filters
   filters: FilterState;
-  
+
   // Actions
   setAdvocates: (advocates: Advocate[]) => void;
   setTotal: (total: number) => void;
@@ -85,24 +86,24 @@ export const useAdvocateStore = create<AdvocateState>()(
         ...initialState,
 
         setAdvocates: (advocates) => set({ advocates }, false, 'setAdvocates'),
-        
+
         setTotal: (total) => set({ total }, false, 'setTotal'),
-        
+
         setLoading: (loading) => set({ loading }, false, 'setLoading'),
-        
+
         setError: (error) => set({ error }, false, 'setError'),
-        
-        setPagination: (pagination) => 
+
+        setPagination: (pagination) =>
           set((state) => ({
             pagination: { ...state.pagination, ...pagination }
           }), false, 'setPagination'),
-        
-        setFilters: (filters) => 
+
+        setFilters: (filters) =>
           set((state) => ({
             filters: { ...state.filters, ...filters }
           }), false, 'setFilters'),
-        
-        resetFilters: () => 
+
+        resetFilters: () =>
           set({
             filters: defaultFilters,
             pagination: {
@@ -110,13 +111,13 @@ export const useAdvocateStore = create<AdvocateState>()(
               currentPage: 1,
             }
           }, false, 'resetFilters'),
-        
+
         searchAdvocates: async (params) => {
           const { setLoading, setError, setAdvocates, setTotal, setPagination } = get();
-          
+
           setLoading(true);
           setError(null);
-          
+
           try {
             const searchParams = new URLSearchParams();
             Object.entries(params).forEach(([key, value]) => {
@@ -153,13 +154,13 @@ export const useAdvocateStore = create<AdvocateState>()(
             setLoading(false);
           }
         },
-        
+
         loadAllAdvocates: async () => {
           const { setLoading, setError, setAdvocates, setTotal, setPagination } = get();
-          
+
           setLoading(true);
           setError(null);
-          
+
           try {
             // Add cache-busting parameter to force fresh data
             const cacheBuster = `_cb=${Date.now()}`;
@@ -172,7 +173,7 @@ export const useAdvocateStore = create<AdvocateState>()(
             const result = await response.json();
             setAdvocates(result.advocates);
             setTotal(result.advocates.length);
-            
+
             setPagination({
               totalItems: result.advocates.length,
               currentPage: 1,
@@ -186,7 +187,7 @@ export const useAdvocateStore = create<AdvocateState>()(
             setLoading(false);
           }
         },
-        
+
         reset: () => set(initialState, false, 'reset'),
       }),
       {

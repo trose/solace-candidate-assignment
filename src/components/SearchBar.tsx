@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { useAdvocatesFilters, useAdvocateActions } from "../stores/advocateStore";
+import { useAdvocateActions } from "../stores/advocateStore";
 import { SearchInput } from "./SearchInput";
 
 interface SearchBarProps {
@@ -17,7 +17,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use Zustand store
-  const filters = useAdvocatesFilters();
   const { setFilters, setPagination, searchAdvocates, loadAllAdvocates } = useAdvocateActions();
 
   const handleSearchChange = useCallback((value: string) => {
