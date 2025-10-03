@@ -3,22 +3,9 @@
 /* eslint-disable no-unused-vars */
 import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
 import { Advocate } from '../types/advocate';
+import { FilterState, PaginationState } from '../types/advocateState';
 
 // Types
-interface FilterState {
-  search: string;
-  city: string;
-  degree: string;
-  minExperience: string;
-  maxExperience: string;
-  specialty: string;
-}
-
-interface PaginationState {
-  currentPage: number;
-  itemsPerPage: number;
-  totalItems: number;
-}
 
 interface AdvocateState {
   advocates: Advocate[];
@@ -98,6 +85,9 @@ function advocateReducer(state: AdvocateState, action: AdvocateAction): Advocate
 interface AdvocateContextType {
   state: AdvocateState;
   dispatch: React.Dispatch<AdvocateAction>;
+  // State properties
+  pagination: PaginationState;
+  filters: FilterState;
   // Actions
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -233,6 +223,8 @@ export function AdvocateProvider({ children }: { children: ReactNode }) {
   const contextValue: AdvocateContextType = {
     state,
     dispatch,
+    pagination: state.pagination,
+    filters: state.filters,
     setLoading,
     setError,
     setAdvocates,

@@ -44,7 +44,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
   });
 
   // Use context for state management
-  const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters } = useAdvocateContext();
+  const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters, pagination, filters } = useAdvocateContext();
 
   const handleFilterChange = useCallback((field: keyof FilterOptions, value: string) => {
     // Update local state immediately
@@ -65,24 +65,32 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     setCurrentPage(1);
 
     const searchParams = {
+      search: filters.search || undefined, // Include current search term
       city: currentFiltersRef.current.city || undefined,
       degree: currentFiltersRef.current.degree || undefined,
       minExperience: currentFiltersRef.current.minExperience || undefined,
       maxExperience: currentFiltersRef.current.maxExperience || undefined,
       specialty: currentFiltersRef.current.specialty || undefined,
-      limit: 25,
-      offset: 0,
+      limit: pagination.itemsPerPage,
+      offset: (pagination.currentPage - 1) * pagination.itemsPerPage,
     };
 
-    // Check if any filters are active
-    const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
+    // Check if any filters are active (exclude limit/offset from check)
+    const hasActiveFilters = Boolean(
+      searchParams.search ||
+      searchParams.city ||
+      searchParams.degree ||
+      searchParams.minExperience ||
+      searchParams.maxExperience ||
+      searchParams.specialty
+    );
 
     if (hasActiveFilters) {
       searchAdvocates(searchParams);
     } else {
       loadAllAdvocates();
     }
-  }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates]);
+  }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, pagination.currentPage, filters.search]);
 
   const handleReset = useCallback(() => {
     const resetState = {
