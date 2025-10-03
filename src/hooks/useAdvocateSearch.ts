@@ -1,30 +1,53 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Advocate } from '../types/advocate';
 
+/**
+ * Search parameters for advocate search
+ */
 interface SearchParams {
+  /** General search term for name, city, degree, or specialties */
   search?: string;
+  /** Filter by city */
   city?: string;
+  /** Filter by degree */
   degree?: string;
+  /** Minimum years of experience */
   minExperience?: string;
+  /** Maximum years of experience */
   maxExperience?: string;
+  /** Filter by specialty */
   specialty?: string;
+  /** Limit number of results */
   limit?: number;
+  /** Offset for pagination */
   offset?: number;
 }
 
+/**
+ * Search result interface
+ */
 interface SearchResult {
   advocates: Advocate[];
   total: number;
-  limit: number | null;
-  offset: number | null;
+  limit?: number | null;
+  offset?: number | null;
 }
 
+/**
+ * Custom hook for advocate search functionality
+ * Provides search, loading states, and error handling
+ * @returns Object with advocates, loading state, error state, and search functions
+ */
 export function useAdvocateSearch() {
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
 
+  /**
+   * Search advocates with advanced filtering
+   * @param params - Search parameters
+   */
   const searchAdvocates = useCallback(async (params: SearchParams = {}) => {
     setLoading(true);
     setError(null);

@@ -10,15 +10,28 @@ import {
   unique,
 } from "drizzle-orm/pg-core";
 
+/**
+ * Database schema for the advocates table
+ * Contains all advocate information including personal details, specialties, and experience
+ */
 const advocates = pgTable("advocates", {
+  /** Unique identifier for the advocate */
   id: serial("id").primaryKey(),
+  /** First name of the advocate */
   firstName: text("first_name").notNull(),
+  /** Last name of the advocate */
   lastName: text("last_name").notNull(),
+  /** City where the advocate is located */
   city: text("city").notNull(),
+  /** Educational degree of the advocate */
   degree: text("degree").notNull(),
+  /** Array of specialties the advocate works with */
   specialties: text("specialties").array().default(sql`'{}'`).notNull(),
+  /** Number of years of professional experience */
   yearsOfExperience: integer("years_of_experience").notNull(),
+  /** Phone number for contact */
   phoneNumber: bigint("phone_number", { mode: "number" }).notNull(),
+  /** Timestamp when the record was created */
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 }, (table) => ({
   // Indexes for searchable fields

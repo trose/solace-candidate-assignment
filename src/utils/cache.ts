@@ -1,5 +1,7 @@
-// Simple in-memory cache for database queries
-// In production, consider using Redis or similar
+/**
+ * Simple in-memory cache for database queries
+ * In production, consider using Redis or similar distributed cache
+ */
 
 interface CacheEntry<T> {
   data: T;
@@ -7,11 +9,29 @@ interface CacheEntry<T> {
   ttl: number; // Time to live in milliseconds
 }
 
+interface CacheStats {
+  size: number;
+  keys: string[];
+  hitRate?: number;
+}
+
 class MemoryCache {
   private cache = new Map<string, CacheEntry<unknown>>();
   private defaultTTL = 5 * 60 * 1000; // 5 minutes default
+  private hitCount = 0;
+  private missCount = 0;
 
+  /**
+   * Set a value in the cache with optional TTL
+   * @param key - Cache key
+   * @param data - Data to cache
+   * @param ttl - Time to live in milliseconds (optional)
+   */
   set<T>(key: string, data: T, ttl?: number): void {
+    if (!key || key.trim() === '') {
+      throw new Error('Cache key cannot be empty');
+    }
+
     const entry: CacheEntry<T> = {
       data,
       timestamp: Date.now(),
@@ -20,31 +40,54 @@ class MemoryCache {
     this.cache.set(key, entry);
   }
 
+  /**
+   * Get a value from the cache
+   * @param key - Cache key
+   * @returns Cached data or null if not found/expired
+   */
   get<T>(key: string): T | null {
+    if (!key || key.trim() === '') {
+      return null;
+    }
+
     const entry = this.cache.get(key);
 
     if (!entry) {
+      this.missCount++;
       return null;
     }
 
     // Check if entry has expired
     if (Date.now() - entry.timestamp > entry.ttl) {
       this.cache.delete(key);
+      this.missCount++;
       return null;
     }
 
+    this.hitCount++;
     return entry.data as T;
   }
 
+  /**
+   * Delete a specific key from the cache
+   * @param key - Cache key to delete
+   */
   delete(key: string): void {
     this.cache.delete(key);
   }
 
+  /**
+   * Clear all entries from the cache
+   */
   clear(): void {
     this.cache.clear();
+    this.hitCount = 0;
+    this.missCount = 0;
   }
 
-  // Clean up expired entries
+  /**
+   * Clean up expired entries
+   */
   cleanup(): void {
     const now = Date.now();
     for (const [key, entry] of this.cache.entries()) {
@@ -54,11 +97,18 @@ class MemoryCache {
     }
   }
 
-  // Get cache statistics
-  getStats() {
+  /**
+   * Get cache statistics including hit rate
+   * @returns Cache statistics
+   */
+  getStats(): CacheStats {
+    const totalRequests = this.hitCount + this.missCount;
+    const hitRate = totalRequests > 0 ? this.hitCount / totalRequests : 0;
+
     return {
       size: this.cache.size,
       keys: Array.from(this.cache.keys()),
+      hitRate: Math.round(hitRate * 100) / 100, // Round to 2 decimal places
     };
   }
 }
