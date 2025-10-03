@@ -164,8 +164,9 @@ export function AdvocateProvider({ children }: { children: ReactNode }) {
       setTotal(result.total);
 
       // Map API response to pagination state
-      const itemsPerPage = result.limit || state.pagination.itemsPerPage;
-      const currentPage = result.offset ? Math.floor(result.offset / itemsPerPage) + 1 : state.pagination.currentPage;
+      const itemsPerPage = result.limit ?? state.pagination.itemsPerPage;
+      const offset = result.offset ?? 0;
+      const currentPage = Math.floor(offset / itemsPerPage) + 1;
 
       dispatch({
         type: 'SET_PAGINATION',

@@ -72,7 +72,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
       maxExperience: currentFiltersRef.current.maxExperience || undefined,
       specialty: currentFiltersRef.current.specialty || undefined,
       limit: pagination.itemsPerPage,
-      offset: (pagination.currentPage - 1) * pagination.itemsPerPage,
+      offset: 0, // Reset to first page when filters change
     };
 
     // Check if any filters are active (exclude limit/offset from check)
