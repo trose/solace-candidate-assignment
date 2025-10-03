@@ -345,7 +345,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
       </div>
     </div>
   );
-});
+};
 
 // Memoize the component to prevent unnecessary re-renders
 export const AdvancedFilters = React.memo(AdvancedFiltersComponent, (prevProps, nextProps) => {
