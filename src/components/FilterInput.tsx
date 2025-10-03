@@ -3,36 +3,41 @@
 /* eslint-disable no-unused-vars */
 import React, { forwardRef } from 'react';
 
-interface SearchInputProps {
+interface FilterInputProps {
+  id: string;
+  type?: string;
   // eslint-disable-next-line no-unused-vars
   value: string; // Required for controlled input
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  min?: string;
+  max?: string;
 }
 
 /**
- * Stable search input component that doesn't get recreated on every render
- * This prevents focus loss by maintaining a stable component reference
+ * Stable filter input component that doesn't get recreated on every render
+ * This prevents focus loss by maintaining stable component references
  */
-export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ value, onChange, placeholder, disabled, className }, ref) => {
+export const FilterInput = forwardRef<HTMLInputElement, FilterInputProps>(
+  ({ id, type = "text", value, onChange, placeholder, disabled, className, min, max }, ref) => {
     return (
       <input
         ref={ref}
-        id="search-input"
-        type="text"
+        id={id}
+        type={type}
         className={className || "w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder || "Search by name, city, degree, or specialty..."}
-        aria-label="Search for advocates"
+        placeholder={placeholder}
         disabled={disabled}
+        min={min}
+        max={max}
         autoComplete="off"
       />
     );
   }
 );
 
-SearchInput.displayName = 'SearchInput';
+FilterInput.displayName = 'FilterInput';
