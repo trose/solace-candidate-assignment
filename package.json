@@ -12,15 +12,22 @@
     "generate": "drizzle-kit generate",
     "migrate:up": "node ./src/db/migrate.js",
     "seed": "curl -X POST http://localhost:3000/api/seed",
-    "prepare": "husky"
+    "prepare": "husky",
+    "type-check": "tsc --noEmit",
+    "build:production": "NODE_ENV=production next build",
+    "analyze:bundle": "npm run build:analyze && open analyze/client.html"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "drizzle-orm": "^0.32.1",
     "ioredis": "^5.8.0",
     "next": "^14.2.19",
     "postgres": "^3.4.4",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.63.0",
+    "zod": "^4.1.11",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
