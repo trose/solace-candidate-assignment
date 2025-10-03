@@ -7,7 +7,6 @@ import { AdvocateFormInput } from '../schemas/advocateSchemas';
 interface AdvocateFormProps {
   onSubmit: (data: AdvocateFormInput) => Promise<void>;
   onCancel?: () => void;
-  initialData?: Partial<AdvocateFormInput>;
   isLoading?: boolean;
 }
 
@@ -18,7 +17,6 @@ interface AdvocateFormProps {
 export function AdvocateForm({
   onSubmit,
   onCancel,
-  initialData,
   isLoading = false
 }: AdvocateFormProps) {
   const {
@@ -31,7 +29,7 @@ export function AdvocateForm({
     watch,
     isReadyToSubmit,
     isSubmitting,
-  } = useAdvocateForm(initialData);
+  } = useAdvocateForm();
 
   const [newSpecialty, setNewSpecialty] = useState('');
   const watchedSpecialties = watch('specialties');

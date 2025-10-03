@@ -63,33 +63,33 @@ const initialState: AdvocateState = {
 // Reducer
 function advocateReducer(state: AdvocateState, action: AdvocateAction): AdvocateState {
   switch (action.type) {
-    case 'SET_LOADING':
-      return { ...state, loading: action.payload };
-    case 'SET_ERROR':
-      return { ...state, error: action.payload };
-    case 'SET_ADVOCATES':
-      return { ...state, advocates: action.payload };
-    case 'SET_TOTAL':
-      return { ...state, total: action.payload };
-    case 'SET_PAGINATION':
-      return { 
-        ...state, 
-        pagination: { ...state.pagination, ...action.payload } 
-      };
-    case 'SET_FILTERS':
-      return { 
-        ...state, 
-        filters: { ...state.filters, ...action.payload } 
-      };
-    case 'RESET_FILTERS':
-      return { 
-        ...state, 
-        filters: initialState.filters 
-      };
-    case 'RESET':
-      return initialState;
-    default:
-      return state;
+  case 'SET_LOADING':
+    return { ...state, loading: action.payload };
+  case 'SET_ERROR':
+    return { ...state, error: action.payload };
+  case 'SET_ADVOCATES':
+    return { ...state, advocates: action.payload };
+  case 'SET_TOTAL':
+    return { ...state, total: action.payload };
+  case 'SET_PAGINATION':
+    return {
+      ...state,
+      pagination: { ...state.pagination, ...action.payload }
+    };
+  case 'SET_FILTERS':
+    return {
+      ...state,
+      filters: { ...state.filters, ...action.payload }
+    };
+  case 'RESET_FILTERS':
+    return {
+      ...state,
+      filters: initialState.filters
+    };
+  case 'RESET':
+    return initialState;
+  default:
+    return state;
   }
 }
 
@@ -171,13 +171,13 @@ export function AdvocateProvider({ children }: { children: ReactNode }) {
       const result = await response.json();
       setAdvocates(result.advocates);
       setTotal(result.total);
-      dispatch({ 
-        type: 'SET_PAGINATION', 
-        payload: { 
+      dispatch({
+        type: 'SET_PAGINATION',
+        payload: {
           totalItems: result.total,
           limit: result.limit || state.pagination.itemsPerPage,
           offset: result.offset || 0,
-        } 
+        }
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -204,12 +204,12 @@ export function AdvocateProvider({ children }: { children: ReactNode }) {
       const result = await response.json();
       setAdvocates(result.advocates);
       setTotal(result.advocates.length);
-      dispatch({ 
-        type: 'SET_PAGINATION', 
-        payload: { 
+      dispatch({
+        type: 'SET_PAGINATION',
+        payload: {
           totalItems: result.advocates.length,
           currentPage: 1,
-        } 
+        }
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');

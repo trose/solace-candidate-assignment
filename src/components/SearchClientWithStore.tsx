@@ -31,7 +31,7 @@ export function SearchClientWithStore() {
   const filters = useAdvocatesFilters();
   // Use context for state management
   const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters, setItemsPerPage } = useAdvocateContext();
-  
+
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -160,9 +160,9 @@ export function SearchClientWithStore() {
         throw new Error(errorData.error || 'Failed to create advocate');
       }
 
-      const result = await response.json();
-      console.log('Advocate created successfully:', result);
-      
+      await response.json();
+      // console.log('Advocate created successfully');
+
       // Close modal and refresh the advocates list
       setIsModalOpen(false);
       loadAllAdvocates();

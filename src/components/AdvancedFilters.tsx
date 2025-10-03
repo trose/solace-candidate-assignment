@@ -16,9 +16,6 @@ interface FilterOptions {
 }
 
 interface AdvancedFiltersProps {
-  // eslint-disable-next-line no-unused-vars
-  onFiltersChange: (filterOptions: FilterOptions) => void;
-  onReset: () => void;
   availableCities: string[];
   availableDegrees: string[];
   availableSpecialties: string[];
@@ -26,8 +23,6 @@ interface AdvancedFiltersProps {
 }
 
 const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
-  onFiltersChange,
-  onReset,
   availableCities,
   availableDegrees,
   availableSpecialties,
@@ -52,10 +47,10 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     maxExperience: '',
     specialty: ''
   });
-  
+
   // Use context for state management
   const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters } = useAdvocateContext();
-  
+
   const handleFilterChange = useCallback((field: keyof FilterOptions, value: string) => {
     // Update local state immediately
     setFilterState(prevState => {
@@ -63,10 +58,10 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
         ...prevState,
         [field]: value
       };
-      
+
       // Update ref to track current state
       currentFiltersRef.current = newFilterState;
-      
+
       return newFilterState;
     });
 
@@ -135,7 +130,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
-    
+
     const resetState = {
       search: '',
       city: '',
@@ -144,7 +139,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
       maxExperience: '',
       specialty: ''
     };
-    
+
     // Update ref and state
     currentFiltersRef.current = resetState;
     setFilterState(resetState);

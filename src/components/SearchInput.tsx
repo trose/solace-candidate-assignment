@@ -15,7 +15,7 @@ interface SearchInputProps {
  * This prevents focus loss by maintaining a stable component reference
  */
 export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ value, onChange, placeholder, disabled, className }, ref) => {
+  ({ onChange, placeholder, disabled, className }, ref) => {
     return (
       <input
         ref={ref}

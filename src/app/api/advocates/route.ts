@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '../../../db';
 import { advocates } from '../../../db/schema';
 import { Advocate } from '../../../types/advocate';
-import { AdvocateFormInput } from '../../../schemas/advocateSchemas';
 import { sql, ilike, or, and, gte, lte, type SQL } from 'drizzle-orm';
 import { cache, cacheKeys } from '../../../utils/cache';
 
@@ -121,17 +120,17 @@ export async function GET(request: Request) {
 
 /**
  * Handle POST requests to create a new advocate
- * 
+ *
  * @param request - The incoming HTTP request containing advocate data in the body
  * @returns A JSON Response containing the created advocate on success, or an error message on failure
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate required fields
     const { firstName, lastName, city, degree, specialties, yearsOfExperience, phoneNumber } = body;
-    
+
     if (!firstName || !lastName || !city || !degree || !specialties || yearsOfExperience === undefined || !phoneNumber) {
       return NextResponse.json(
         { error: 'Missing required fields' },
@@ -156,10 +155,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate phone number (convert to number if it's a string)
-    const phoneNumberValue = typeof phoneNumber === 'string' 
-      ? parseInt(phoneNumber.replace(/\D/g, ''), 10) 
+    const phoneNumberValue = typeof phoneNumber === 'string'
+      ? parseInt(phoneNumber.replace(/\D/g, ''), 10)
       : phoneNumber;
-    
+
     if (isNaN(phoneNumberValue) || phoneNumberValue <= 0) {
       return NextResponse.json(
         { error: 'Phone number must be a valid number' },
@@ -184,14 +183,14 @@ export async function POST(request: NextRequest) {
     // Clear cache to ensure fresh data
     await cache.clear();
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Advocate created successfully',
-      advocate: newAdvocate 
+      advocate: newAdvocate
     }, { status: 201 });
 
   } catch (error) {
     console.error('Error creating advocate:', error);
-    
+
     // Handle unique constraint violation
     if (error instanceof Error && error.message.includes('advocates_unique_name_idx')) {
       return NextResponse.json(
@@ -199,7 +198,7 @@ export async function POST(request: NextRequest) {
         { status: 409 }
       );
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to create advocate' },
       { status: 500 }

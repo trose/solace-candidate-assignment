@@ -17,7 +17,7 @@ interface FilterSelectProps {
  * This prevents focus loss by maintaining stable component references
  */
 export const FilterSelect = forwardRef<HTMLSelectElement, FilterSelectProps>(
-  ({ id, value, onChange, options, placeholder, disabled, className }, ref) => {
+  ({ id, onChange, options, placeholder, disabled, className }, ref) => {
     return (
       <select
         ref={ref}
