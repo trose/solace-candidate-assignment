@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useAdvocateContext } from "../contexts/AdvocateContext";
-import { SearchInput } from "./SearchInput";
 import { FilterInput } from "./FilterInput";
 import { FilterSelect } from "./FilterSelect";
 
 interface FilterOptions {
-  search: string;
   city: string;
   degree: string;
   minExperience: string;
@@ -29,7 +27,6 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
   isLoading = false
 }) => {
   const [filterState, setFilterState] = useState<FilterOptions>({
-    search: '',
     city: '',
     degree: '',
     minExperience: '',
@@ -38,9 +35,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
   });
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const currentFiltersRef = useRef<FilterOptions>({
-    search: '',
     city: '',
     degree: '',
     minExperience: '',
@@ -65,74 +60,32 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
       return newFilterState;
     });
 
-    // Clear existing timeout for search field
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
+    // Update store and search immediately for filters (no debouncing needed)
+    setFilters({ [field]: value });
+    setCurrentPage(1);
 
-    // For search field, use debouncing to prevent focus loss
-    if (field === 'search') {
-      searchTimeoutRef.current = setTimeout(() => {
-        // Update store only after debounce
-        setFilters(currentFiltersRef.current);
-        setCurrentPage(1);
+    const searchParams = {
+      city: currentFiltersRef.current.city || undefined,
+      degree: currentFiltersRef.current.degree || undefined,
+      minExperience: currentFiltersRef.current.minExperience || undefined,
+      maxExperience: currentFiltersRef.current.maxExperience || undefined,
+      specialty: currentFiltersRef.current.specialty || undefined,
+      limit: 25,
+      offset: 0,
+    };
 
-        // Convert empty strings to undefined for the API
-        const searchParams = {
-          search: currentFiltersRef.current.search || undefined,
-          city: currentFiltersRef.current.city || undefined,
-          degree: currentFiltersRef.current.degree || undefined,
-          minExperience: currentFiltersRef.current.minExperience || undefined,
-          maxExperience: currentFiltersRef.current.maxExperience || undefined,
-          specialty: currentFiltersRef.current.specialty || undefined,
-          limit: 25, // Default limit
-          offset: 0,
-        };
+    // Check if any filters are active
+    const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
 
-        // Check if any filters are active
-        const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
-
-        if (hasActiveFilters) {
-          searchAdvocates(searchParams);
-        } else {
-          loadAllAdvocates();
-        }
-      }, 300); // 300ms debounce
+    if (hasActiveFilters) {
+      searchAdvocates(searchParams);
     } else {
-      // For other fields, update store immediately and search
-      setFilters(currentFiltersRef.current);
-      setCurrentPage(1);
-
-      const searchParams = {
-        search: currentFiltersRef.current.search || undefined,
-        city: currentFiltersRef.current.city || undefined,
-        degree: currentFiltersRef.current.degree || undefined,
-        minExperience: currentFiltersRef.current.minExperience || undefined,
-        maxExperience: currentFiltersRef.current.maxExperience || undefined,
-        specialty: currentFiltersRef.current.specialty || undefined,
-        limit: 25, // Default limit
-        offset: 0,
-      };
-
-      // Check if any filters are active
-      const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
-
-      if (hasActiveFilters) {
-        searchAdvocates(searchParams);
-      } else {
-        loadAllAdvocates();
-      }
+      loadAllAdvocates();
     }
   }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates]);
 
   const handleReset = useCallback(() => {
-    // Clear any pending search timeout
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
     const resetState = {
-      search: '',
       city: '',
       degree: '',
       minExperience: '',
@@ -148,21 +101,12 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     loadAllAdvocates();
   }, [resetFilters, setCurrentPage, loadAllAdvocates]);
 
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, []);
-
   const hasActiveFilters = Object.values(filterState).some(value => value.trim() !== '');
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Search & Filters</h3>
+        <h3 className="text-lg font-semibold">Advanced Filters</h3>
         <div className="flex gap-2">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
@@ -176,25 +120,12 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
             <button
               onClick={handleReset}
               className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
-              aria-label="Clear all filters"
+              aria-label="Reset all filters"
             >
-              Clear All
+              Reset
             </button>
           )}
         </div>
-      </div>
-
-      {/* Basic Search */}
-      <div className="mb-4">
-        <label htmlFor="search-input" className="block text-sm font-medium text-gray-700 mb-1">
-          Search
-        </label>
-        <SearchInput
-          value={filterState.search}
-          onChange={(value) => handleFilterChange('search', value)}
-          placeholder="Search by name, city, degree, or specialty..."
-          disabled={isLoading}
-        />
       </div>
 
       {/* Advanced Filters */}
@@ -288,11 +219,6 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
             <div className="bg-blue-50 border border-blue-200 rounded p-3">
               <h4 className="text-sm font-medium text-blue-800 mb-2">Active Filters:</h4>
               <div className="flex flex-wrap gap-2">
-                {filterState.search && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                    Search: &quot;{filterState.search}&quot;
-                  </span>
-                )}
                 {filterState.city && (
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
                     City: {filterState.city}

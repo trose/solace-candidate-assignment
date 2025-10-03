@@ -19,7 +19,7 @@ interface FilterInputProps {
  * This prevents focus loss by maintaining stable component references
  */
 export const FilterInput = forwardRef<HTMLInputElement, FilterInputProps>(
-  ({ id, type = "text", onChange, placeholder, disabled, className, min, max }, ref) => {
+  ({ id, type = "text", value, onChange, placeholder, disabled, className, min, max }, ref) => {
     return (
       <input
         ref={ref}

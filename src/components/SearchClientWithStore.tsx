@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useEffect, useState } from "react";
 import { useAdvocates, useAdvocatesLoading, useAdvocatesError, useAdvocatesPagination, useAdvocatesFilters, useAdvocateContext } from "../contexts/AdvocateContext";
+import { SearchBar } from "./SearchBar";
 import { AdvancedFilters } from "./AdvancedFilters";
 import { AdvocateTable } from "./AdvocateTable";
 import { Pagination } from "./Pagination";
@@ -30,7 +31,7 @@ export function SearchClientWithStore() {
   const pagination = useAdvocatesPagination();
   const filters = useAdvocatesFilters();
   // Use context for state management
-  const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters, setItemsPerPage } = useAdvocateContext();
+  const { setCurrentPage, searchAdvocates, loadAllAdvocates, setItemsPerPage } = useAdvocateContext();
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,40 +57,7 @@ export function SearchClientWithStore() {
     loadAllAdvocates();
   }, [loadAllAdvocates]);
 
-  const handleFiltersChange = useCallback((newFilters: typeof filters) => {
-    // Update filters in store
-    setFilters(newFilters);
-
-    // Reset to first page when filters change
-    setCurrentPage(1);
-
-    // Convert empty strings to undefined for the API
-    const searchParams = {
-      search: newFilters.search || undefined,
-      city: newFilters.city || undefined,
-      degree: newFilters.degree || undefined,
-      minExperience: newFilters.minExperience || undefined,
-      maxExperience: newFilters.maxExperience || undefined,
-      specialty: newFilters.specialty || undefined,
-      limit: pagination.itemsPerPage,
-      offset: 0, // Always start from first page when filters change
-    };
-
-    // Check if any filters are active
-    const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
-
-    if (hasActiveFilters) {
-      searchAdvocates(searchParams);
-    } else {
-      loadAllAdvocates();
-    }
-  }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage]);
-
-  const handleReset = useCallback(() => {
-    resetFilters();
-    setCurrentPage(1);
-    loadAllAdvocates();
-  }, [resetFilters, setCurrentPage, loadAllAdvocates]);
+  // Note: Filter handling is now managed by SearchBar and AdvancedFilters components
 
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
@@ -175,12 +143,14 @@ export function SearchClientWithStore() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Search Bar - Always visible */}
+      <SearchBar isLoading={loading} />
+
+      {/* Advanced Filters - Collapsible */}
       {loading && advocates.length === 0 ? (
         <SkeletonFilters />
       ) : (
         <AdvancedFilters
-          onFiltersChange={handleFiltersChange}
-          onReset={handleReset}
           availableCities={availableCities}
           availableDegrees={availableDegrees}
           availableSpecialties={availableSpecialties}
