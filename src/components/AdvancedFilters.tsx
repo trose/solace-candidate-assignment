@@ -41,59 +41,52 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
 
   const [isExpanded, setIsExpanded] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const currentFiltersRef = useRef<FilterOptions>({
+    search: '',
+    city: '',
+    degree: '',
+    minExperience: '',
+    maxExperience: '',
+    specialty: ''
+  });
   
   // Use Zustand store directly to avoid callback issues
   const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters } = useAdvocateStore();
   
   const handleFilterChange = useCallback((field: keyof FilterOptions, value: string) => {
+    // Update local state immediately
     setFilterState(prevState => {
       const newFilterState = {
         ...prevState,
         [field]: value
       };
+      
+      // Update ref to track current state
+      currentFiltersRef.current = newFilterState;
+      
+      return newFilterState;
+    });
 
-      // Update store directly
-      setFilters(newFilterState);
-      setCurrentPage(1);
+    // Clear existing timeout for search field
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
 
-      // Clear existing timeout for search field
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
+    // For search field, use debouncing to prevent focus loss
+    if (field === 'search') {
+      searchTimeoutRef.current = setTimeout(() => {
+        // Update store only after debounce
+        setFilters(currentFiltersRef.current);
+        setCurrentPage(1);
 
-      // For search field, use debouncing to prevent focus loss
-      if (field === 'search') {
-        searchTimeoutRef.current = setTimeout(() => {
-          // Convert empty strings to undefined for the API
-          const searchParams = {
-            search: newFilterState.search || undefined,
-            city: newFilterState.city || undefined,
-            degree: newFilterState.degree || undefined,
-            minExperience: newFilterState.minExperience || undefined,
-            maxExperience: newFilterState.maxExperience || undefined,
-            specialty: newFilterState.specialty || undefined,
-            limit: 25, // Default limit
-            offset: 0,
-          };
-
-          // Check if any filters are active
-          const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
-
-          if (hasActiveFilters) {
-            searchAdvocates(searchParams);
-          } else {
-            loadAllAdvocates();
-          }
-        }, 300); // 300ms debounce
-      } else {
-        // For other fields, search immediately
+        // Convert empty strings to undefined for the API
         const searchParams = {
-          search: newFilterState.search || undefined,
-          city: newFilterState.city || undefined,
-          degree: newFilterState.degree || undefined,
-          minExperience: newFilterState.minExperience || undefined,
-          maxExperience: newFilterState.maxExperience || undefined,
-          specialty: newFilterState.specialty || undefined,
+          search: currentFiltersRef.current.search || undefined,
+          city: currentFiltersRef.current.city || undefined,
+          degree: currentFiltersRef.current.degree || undefined,
+          minExperience: currentFiltersRef.current.minExperience || undefined,
+          maxExperience: currentFiltersRef.current.maxExperience || undefined,
+          specialty: currentFiltersRef.current.specialty || undefined,
           limit: 25, // Default limit
           offset: 0,
         };
@@ -106,10 +99,32 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
         } else {
           loadAllAdvocates();
         }
-      }
+      }, 300); // 300ms debounce
+    } else {
+      // For other fields, update store immediately and search
+      setFilters(currentFiltersRef.current);
+      setCurrentPage(1);
 
-      return newFilterState;
-    });
+      const searchParams = {
+        search: currentFiltersRef.current.search || undefined,
+        city: currentFiltersRef.current.city || undefined,
+        degree: currentFiltersRef.current.degree || undefined,
+        minExperience: currentFiltersRef.current.minExperience || undefined,
+        maxExperience: currentFiltersRef.current.maxExperience || undefined,
+        specialty: currentFiltersRef.current.specialty || undefined,
+        limit: 25, // Default limit
+        offset: 0,
+      };
+
+      // Check if any filters are active
+      const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
+
+      if (hasActiveFilters) {
+        searchAdvocates(searchParams);
+      } else {
+        loadAllAdvocates();
+      }
+    }
   }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates]);
 
   const handleReset = useCallback(() => {
@@ -126,6 +141,9 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
       maxExperience: '',
       specialty: ''
     };
+    
+    // Update ref and state
+    currentFiltersRef.current = resetState;
     setFilterState(resetState);
     resetFilters();
     setCurrentPage(1);
@@ -174,7 +192,6 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
           Search
         </label>
         <input
-          key="search-input"
           id="search-input"
           type="text"
           className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -183,6 +200,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
           placeholder="Search by name, city, degree, or specialty..."
           aria-label="Search for advocates"
           disabled={isLoading}
+          autoComplete="off"
         />
       </div>
 
