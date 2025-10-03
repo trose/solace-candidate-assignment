@@ -5,6 +5,9 @@ import { Advocate } from '../../../types/advocate';
 import { sql, ilike, or, and, gte, lte, type SQL } from 'drizzle-orm';
 import { cache, cacheKeys } from '../../../utils/cache';
 
+// Force dynamic rendering since we use request.url
+export const dynamic = 'force-dynamic';
+
 /**
  * Handle GET requests to fetch advocates filtered by URL search parameters and return the results as JSON.
  *
