@@ -30,7 +30,7 @@ export default async function Home() {
       <h1>Solace Advocates</h1>
       <br />
       <br />
-      {error && <div role="alert" style={{ color: 'red' }}>{error}</div>}
+      {error && <div role="alert" className="text-red-600">{error}</div>}
       <SearchClient initialAdvocates={advocates} />
     </main>
   );
