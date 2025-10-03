@@ -8,6 +8,7 @@ interface AdvocateTableProps {
 export const AdvocateTable: React.FC<AdvocateTableProps> = ({ advocates }) => {
   return (
     <table>
+      <caption>Advocates List</caption>
       <thead>
         <tr>
           <th>First Name</th>
