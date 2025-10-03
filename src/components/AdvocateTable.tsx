@@ -25,7 +25,9 @@ export const AdvocateTable: React.FC<AdvocateTableProps> = ({ advocates }) => {
   };
 
   const sortedAdvocates = useMemo(() => {
-    if (!sortConfig.field) return advocates;
+    if (!sortConfig.field) {
+      return advocates;
+    }
 
     return [...advocates].sort((a, b) => {
       const aValue = a[sortConfig.field!];
@@ -64,8 +66,8 @@ export const AdvocateTable: React.FC<AdvocateTableProps> = ({ advocates }) => {
         </caption>
         <thead className="bg-gray-50">
           <tr>
-            <th 
-              scope="col" 
+            <th
+              scope="col"
               className="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-100 select-none"
               onClick={() => handleSort('firstName')}
               role="button"
@@ -78,8 +80,8 @@ export const AdvocateTable: React.FC<AdvocateTableProps> = ({ advocates }) => {
                 {getSortIcon('firstName')}
               </div>
             </th>
-            <th 
-              scope="col" 
+            <th
+              scope="col"
               className="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-100 select-none"
               onClick={() => handleSort('lastName')}
               role="button"
@@ -92,8 +94,8 @@ export const AdvocateTable: React.FC<AdvocateTableProps> = ({ advocates }) => {
                 {getSortIcon('lastName')}
               </div>
             </th>
-            <th 
-              scope="col" 
+            <th
+              scope="col"
               className="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-100 select-none"
               onClick={() => handleSort('city')}
               role="button"
@@ -106,8 +108,8 @@ export const AdvocateTable: React.FC<AdvocateTableProps> = ({ advocates }) => {
                 {getSortIcon('city')}
               </div>
             </th>
-            <th 
-              scope="col" 
+            <th
+              scope="col"
               className="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-100 select-none"
               onClick={() => handleSort('degree')}
               role="button"
@@ -123,8 +125,8 @@ export const AdvocateTable: React.FC<AdvocateTableProps> = ({ advocates }) => {
             <th scope="col" className="border border-gray-300 px-4 py-2 text-left">
               Specialties
             </th>
-            <th 
-              scope="col" 
+            <th
+              scope="col"
               className="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-100 select-none"
               onClick={() => handleSort('yearsOfExperience')}
               role="button"
@@ -137,8 +139,8 @@ export const AdvocateTable: React.FC<AdvocateTableProps> = ({ advocates }) => {
                 {getSortIcon('yearsOfExperience')}
               </div>
             </th>
-            <th 
-              scope="col" 
+            <th
+              scope="col"
               className="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-100 select-none"
               onClick={() => handleSort('phoneNumber')}
               role="button"

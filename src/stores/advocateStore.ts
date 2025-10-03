@@ -64,32 +64,32 @@ interface AdvocateStoreState {
   total: number;
   loading: boolean;
   error: string | null;
-  
+
   // Pagination
   pagination: PaginationState;
-  
+
   // Filters
   filters: FilterState;
-  
+
   // Actions
   setAdvocates: (advocates: Advocate[]) => void;
   setTotal: (total: number) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  
+
   // Pagination actions
   setCurrentPage: (page: number) => void;
   setItemsPerPage: (itemsPerPage: number) => void;
   setTotalItems: (total: number) => void;
-  
+
   // Filter actions
   setFilters: (filters: Partial<FilterState>) => void;
   resetFilters: () => void;
-  
+
   // Search actions
   searchAdvocates: (params: SearchParams) => Promise<void>;
   loadAllAdvocates: () => Promise<void>;
-  
+
   // Utility actions
   reset: () => void;
 }
@@ -138,30 +138,30 @@ export const useAdvocateStore = create<AdvocateStoreState>()(
         setError: (error) => set({ error }),
 
         // Pagination actions
-        setCurrentPage: (currentPage) => 
-          set((state) => ({ 
-            pagination: { ...state.pagination, currentPage } 
+        setCurrentPage: (currentPage) =>
+          set((state) => ({
+            pagination: { ...state.pagination, currentPage }
           })),
-        
-        setItemsPerPage: (itemsPerPage) => 
-          set((state) => ({ 
-            pagination: { ...state.pagination, itemsPerPage, currentPage: 1 } 
+
+        setItemsPerPage: (itemsPerPage) =>
+          set((state) => ({
+            pagination: { ...state.pagination, itemsPerPage, currentPage: 1 }
           })),
-        
-        setTotalItems: (totalItems) => 
-          set((state) => ({ 
-            pagination: { ...state.pagination, totalItems } 
+
+        setTotalItems: (totalItems) =>
+          set((state) => ({
+            pagination: { ...state.pagination, totalItems }
           })),
 
         // Filter actions
-        setFilters: (newFilters) => 
-          set((state) => ({ 
+        setFilters: (newFilters) =>
+          set((state) => ({
             filters: { ...state.filters, ...newFilters },
             pagination: { ...state.pagination, currentPage: 1 }
           })),
-        
-        resetFilters: () => 
-          set({ 
+
+        resetFilters: () =>
+          set({
             filters: defaultFilters,
             pagination: { ...defaultPagination, totalItems: get().pagination.totalItems }
           }),
@@ -173,14 +173,30 @@ export const useAdvocateStore = create<AdvocateStoreState>()(
           try {
             const searchParams = new URLSearchParams();
 
-            if (params.search) searchParams.set('search', params.search);
-            if (params.city) searchParams.set('city', params.city);
-            if (params.degree) searchParams.set('degree', params.degree);
-            if (params.minExperience) searchParams.set('minExperience', params.minExperience);
-            if (params.maxExperience) searchParams.set('maxExperience', params.maxExperience);
-            if (params.specialty) searchParams.set('specialty', params.specialty);
-            if (params.limit) searchParams.set('limit', params.limit.toString());
-            if (params.offset) searchParams.set('offset', params.offset.toString());
+            if (params.search) {
+              searchParams.set('search', params.search);
+            }
+            if (params.city) {
+              searchParams.set('city', params.city);
+            }
+            if (params.degree) {
+              searchParams.set('degree', params.degree);
+            }
+            if (params.minExperience) {
+              searchParams.set('minExperience', params.minExperience);
+            }
+            if (params.maxExperience) {
+              searchParams.set('maxExperience', params.maxExperience);
+            }
+            if (params.specialty) {
+              searchParams.set('specialty', params.specialty);
+            }
+            if (params.limit) {
+              searchParams.set('limit', params.limit.toString());
+            }
+            if (params.offset) {
+              searchParams.set('offset', params.offset.toString());
+            }
 
             const response = await fetch(`/api/advocates/search?${searchParams.toString()}`);
 
@@ -189,7 +205,7 @@ export const useAdvocateStore = create<AdvocateStoreState>()(
             }
 
             const result: SearchResult = await response.json();
-            
+
             set({
               advocates: result.advocates,
               total: result.total,
@@ -222,7 +238,7 @@ export const useAdvocateStore = create<AdvocateStoreState>()(
             }
 
             const result = await response.json();
-            
+
             set({
               advocates: result.advocates,
               total: result.advocates.length,
@@ -244,7 +260,7 @@ export const useAdvocateStore = create<AdvocateStoreState>()(
         },
 
         // Utility actions
-        reset: () => 
+        reset: () =>
           set({
             advocates: [],
             total: 0,

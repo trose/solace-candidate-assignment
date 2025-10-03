@@ -10,7 +10,8 @@ interface FilterOptions {
 }
 
 interface AdvancedFiltersProps {
-  onFiltersChange: (filters: FilterOptions) => void;
+  // eslint-disable-next-line no-unused-vars
+  onFiltersChange: (filterOptions: FilterOptions) => void;
   onReset: () => void;
   availableCities: string[];
   availableDegrees: string[];
@@ -26,7 +27,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   availableSpecialties,
   isLoading = false
 }) => {
-  const [filters, setFilters] = useState<FilterOptions>({
+  const [filterState, setFilterState] = useState<FilterOptions>({
     search: '',
     city: '',
     degree: '',
@@ -38,18 +39,18 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    onFiltersChange(filters);
-  }, [filters, onFiltersChange]);
+    onFiltersChange(filterState);
+  }, [filterState, onFiltersChange]);
 
   const handleFilterChange = (field: keyof FilterOptions, value: string) => {
-    setFilters(prev => ({
+    setFilterState(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
   const handleReset = () => {
-    setFilters({
+    setFilterState({
       search: '',
       city: '',
       degree: '',
@@ -60,7 +61,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
     onReset();
   };
 
-  const hasActiveFilters = Object.values(filters).some(value => value.trim() !== '');
+  const hasActiveFilters = Object.values(filterState).some(value => value.trim() !== '');
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
@@ -96,7 +97,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           id="search-input"
           type="text"
           className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={filters.search}
+          value={filterState.search}
           onChange={(e) => handleFilterChange('search', e.target.value)}
           placeholder="Search by name, city, degree, or specialty..."
           aria-label="Search for advocates"
@@ -105,7 +106,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
       </div>
 
       {/* Advanced Filters */}
-      <div 
+      <div
         id="advanced-filters"
         className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-300 ${
           isExpanded ? 'opacity-100 max-h-96' : 'opacity-0 max-h-0 overflow-hidden'
@@ -119,7 +120,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           <select
             id="city-filter"
             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={filters.city}
+            value={filterState.city}
             onChange={(e) => handleFilterChange('city', e.target.value)}
             disabled={isLoading}
           >
@@ -138,7 +139,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           <select
             id="degree-filter"
             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={filters.degree}
+            value={filterState.degree}
             onChange={(e) => handleFilterChange('degree', e.target.value)}
             disabled={isLoading}
           >
@@ -157,7 +158,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           <select
             id="specialty-filter"
             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={filters.specialty}
+            value={filterState.specialty}
             onChange={(e) => handleFilterChange('specialty', e.target.value)}
             disabled={isLoading}
           >
@@ -179,7 +180,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             min="0"
             max="50"
             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={filters.minExperience}
+            value={filterState.minExperience}
             onChange={(e) => handleFilterChange('minExperience', e.target.value)}
             placeholder="0"
             disabled={isLoading}
@@ -196,7 +197,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             min="0"
             max="50"
             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={filters.maxExperience}
+            value={filterState.maxExperience}
             onChange={(e) => handleFilterChange('maxExperience', e.target.value)}
             placeholder="50"
             disabled={isLoading}
@@ -209,29 +210,29 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             <div className="bg-blue-50 border border-blue-200 rounded p-3">
               <h4 className="text-sm font-medium text-blue-800 mb-2">Active Filters:</h4>
               <div className="flex flex-wrap gap-2">
-                {filters.search && (
+                {filterState.search && (
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                    Search: "{filters.search}"
+                    Search: &quot;{filterState.search}&quot;
                   </span>
                 )}
-                {filters.city && (
+                {filterState.city && (
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                    City: {filters.city}
+                    City: {filterState.city}
                   </span>
                 )}
-                {filters.degree && (
+                {filterState.degree && (
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                    Degree: {filters.degree}
+                    Degree: {filterState.degree}
                   </span>
                 )}
-                {filters.specialty && (
+                {filterState.specialty && (
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                    Specialty: {filters.specialty}
+                    Specialty: {filterState.specialty}
                   </span>
                 )}
-                {(filters.minExperience || filters.maxExperience) && (
+                {(filterState.minExperience || filterState.maxExperience) && (
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                    Experience: {filters.minExperience || '0'} - {filters.maxExperience || '∞'} years
+                    Experience: {filterState.minExperience || '0'} - {filterState.maxExperience || '∞'} years
                   </span>
                 )}
               </div>

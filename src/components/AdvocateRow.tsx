@@ -19,7 +19,7 @@ export const AdvocateRow: React.FC<AdvocateRowProps> = ({ advocate }) => {
       <td className="border border-gray-300 px-4 py-2">
         <div className="flex flex-wrap gap-1">
           {advocate.specialties.map((specialty) => (
-            <span 
+            <span
               key={specialty}
               className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
             >

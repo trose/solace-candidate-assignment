@@ -1,11 +1,13 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 
 interface PaginationProps {
   currentPage: number;
   totalItems: number;
   itemsPerPage: number;
-  onPageChange: (page: number) => void;
-  onItemsPerPageChange: (itemsPerPage: number) => void;
+  // eslint-disable-next-line no-unused-vars
+  onPageChange: (newPage: number) => void;
+  // eslint-disable-next-line no-unused-vars
+  onItemsPerPageChange: (newItemsPerPage: number) => void;
   isLoading?: boolean;
 }
 
@@ -21,9 +23,9 @@ export const Pagination: React.FC<PaginationProps> = ({
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
-  const handlePageChange = useCallback((page: number) => {
-    if (page >= 1 && page <= totalPages && !isLoading) {
-      onPageChange(page);
+  const handlePageChange = useCallback((newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages && !isLoading) {
+      onPageChange(newPage);
     }
   }, [onPageChange, totalPages, isLoading]);
 

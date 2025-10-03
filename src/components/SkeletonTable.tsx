@@ -3,9 +3,9 @@ interface SkeletonTableProps {
   columns?: number;
 }
 
-export const SkeletonTable: React.FC<SkeletonTableProps> = ({ 
-  rows = 5, 
-  columns = 7 
+export const SkeletonTable: React.FC<SkeletonTableProps> = ({
+  rows = 5,
+  columns = 7
 }) => {
   return (
     <div className="overflow-x-auto">
@@ -16,9 +16,9 @@ export const SkeletonTable: React.FC<SkeletonTableProps> = ({
         <thead className="bg-gray-50">
           <tr>
             {Array.from({ length: columns }).map((_, index) => (
-              <th 
+              <th
                 key={index}
-                scope="col" 
+                scope="col"
                 className="border border-gray-300 px-4 py-2 text-left"
               >
                 <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>

@@ -20,7 +20,7 @@ interface FilterOptions {
 /**
  * Renders an advanced search UI and advocates table powered by the useAdvocateSearch hook.
  *
- * The component provides comprehensive filtering options including search, city, degree, 
+ * The component provides comprehensive filtering options including search, city, degree,
  * experience range, and specialty filters. It displays loading states, error handling,
  * and a sortable advocates table with enhanced styling.
  *
@@ -32,25 +32,25 @@ export function SearchClient() {
   const [itemsPerPage, setItemsPerPage] = useState(25);
 
   // Extract unique values for filter options
-  const availableCities = useMemo(() => 
-    Array.from(new Set(advocates.map(advocate => advocate.city))).sort(), 
-    [advocates]
+  const availableCities = useMemo(() =>
+    Array.from(new Set(advocates.map(advocate => advocate.city))).sort(),
+  [advocates]
   );
 
-  const availableDegrees = useMemo(() => 
-    Array.from(new Set(advocates.map(advocate => advocate.degree))).sort(), 
-    [advocates]
+  const availableDegrees = useMemo(() =>
+    Array.from(new Set(advocates.map(advocate => advocate.degree))).sort(),
+  [advocates]
   );
 
-  const availableSpecialties = useMemo(() => 
-    Array.from(new Set(advocates.flatMap(advocate => advocate.specialties))).sort(), 
-    [advocates]
+  const availableSpecialties = useMemo(() =>
+    Array.from(new Set(advocates.flatMap(advocate => advocate.specialties))).sort(),
+  [advocates]
   );
 
   const handleFiltersChange = useCallback((filters: FilterOptions) => {
     // Reset to first page when filters change
     setCurrentPage(1);
-    
+
     // Convert empty strings to undefined for the API
     const searchParams = {
       search: filters.search || undefined,
@@ -108,7 +108,7 @@ export function SearchClient() {
           isLoading={loading}
         />
       )}
-      
+
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4" role="alert">
           <div className="flex">
@@ -124,13 +124,13 @@ export function SearchClient() {
           </div>
         </div>
       )}
-      
+
       {loading && advocates.length === 0 ? (
         <SkeletonTable rows={5} columns={7} />
       ) : (
         <AdvocateTable advocates={advocates} />
       )}
-      
+
       {!loading && advocates.length > 0 && (
         <Pagination
           currentPage={currentPage}
