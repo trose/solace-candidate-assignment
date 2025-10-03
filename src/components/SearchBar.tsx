@@ -16,8 +16,7 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
   const [searchValue, setSearchValue] = useState('');
 
-  // Use Zustand store
-  const filters = useAdvocateStore((state) => state.filters);
+  // Use Zustand store actions (stable selectors)
   const setFilters = useAdvocateStore((state) => state.setFilters);
   const setPagination = useAdvocateStore((state) => state.setPagination);
   const searchAdvocates = useAdvocateStore((state) => state.searchAdvocates);
@@ -27,29 +26,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isLoading = false }) => {
     // Filters are already set immediately in handleSearchChange
     setPagination({ currentPage: 1 });
 
-    const searchParams = {
-      search: value || undefined,
-      city: filters.city || undefined,
-      degree: filters.degree || undefined,
-      minExperience: filters.minExperience || undefined,
-      maxExperience: filters.maxExperience || undefined,
-      specialty: filters.specialty || undefined,
-      limit: 25,
-      offset: 0,
-    };
-
-    // Check if any filters are active
-    const hasActiveFilters = Boolean(
-      searchParams.search ||
-      searchParams.city ||
-      searchParams.degree ||
-      searchParams.minExperience ||
-      searchParams.maxExperience ||
-      searchParams.specialty
-    );
-
-    if (hasActiveFilters) {
-      searchAdvocates(searchParams);
+    if (value.trim()) {
+      searchAdvocates({
+        search: value,
+        limit: 25,
+        offset: 0,
+      });
     } else {
       loadAllAdvocates();
     }
