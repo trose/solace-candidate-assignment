@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 
 interface FilterOptions {
   search: string;
@@ -21,7 +21,7 @@ interface AdvancedFiltersProps {
   isLoading?: boolean;
 }
 
-export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
+export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
   onFiltersChange,
   onReset,
   availableCities,
@@ -39,17 +39,30 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   });
 
   const [isExpanded, setIsExpanded] = useState(false);
-
+  
+  // Use ref to store the callback to avoid dependency issues
+  const onFiltersChangeRef = useRef(onFiltersChange);
+  const onResetRef = useRef(onReset);
+  
+  // Update refs when props change
+  useEffect(() => {
+    onFiltersChangeRef.current = onFiltersChange;
+  }, [onFiltersChange]);
+  
+  useEffect(() => {
+    onResetRef.current = onReset;
+  }, [onReset]);
+  
   const handleFilterChange = useCallback((field: keyof FilterOptions, value: string) => {
     setFilterState(prevState => {
       const newFilterState = {
         ...prevState,
         [field]: value
       };
-      onFiltersChange(newFilterState);
+      onFiltersChangeRef.current(newFilterState);
       return newFilterState;
     });
-  }, [onFiltersChange]);
+  }, []);
 
   const handleReset = useCallback(() => {
     const resetState = {
@@ -61,9 +74,9 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
       specialty: ''
     };
     setFilterState(resetState);
-    onFiltersChange(resetState);
-    onReset();
-  }, [onFiltersChange, onReset]);
+    onFiltersChangeRef.current(resetState);
+    onResetRef.current();
+  }, []);
 
   const hasActiveFilters = Object.values(filterState).some(value => value.trim() !== '');
 
@@ -247,4 +260,6 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
       </div>
     </div>
   );
-};
+});
+
+AdvancedFilters.displayName = 'AdvancedFilters';
