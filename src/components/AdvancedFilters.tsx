@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
+import { useAdvocateStore } from "../stores/advocateStore";
 
 interface FilterOptions {
   search: string;
@@ -40,18 +41,8 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
 
   const [isExpanded, setIsExpanded] = useState(false);
   
-  // Use ref to store the callback to avoid dependency issues
-  const onFiltersChangeRef = useRef(onFiltersChange);
-  const onResetRef = useRef(onReset);
-  
-  // Update refs when props change
-  useEffect(() => {
-    onFiltersChangeRef.current = onFiltersChange;
-  }, [onFiltersChange]);
-  
-  useEffect(() => {
-    onResetRef.current = onReset;
-  }, [onReset]);
+  // Use Zustand store directly to avoid callback issues
+  const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters } = useAdvocateStore();
   
   const handleFilterChange = useCallback((field: keyof FilterOptions, value: string) => {
     setFilterState(prevState => {
@@ -59,10 +50,35 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
         ...prevState,
         [field]: value
       };
-      onFiltersChangeRef.current(newFilterState);
+      
+      // Update store directly
+      setFilters(newFilterState);
+      setCurrentPage(1);
+      
+      // Convert empty strings to undefined for the API
+      const searchParams = {
+        search: newFilterState.search || undefined,
+        city: newFilterState.city || undefined,
+        degree: newFilterState.degree || undefined,
+        minExperience: newFilterState.minExperience || undefined,
+        maxExperience: newFilterState.maxExperience || undefined,
+        specialty: newFilterState.specialty || undefined,
+        limit: 25, // Default limit
+        offset: 0,
+      };
+
+      // Check if any filters are active
+      const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
+
+      if (hasActiveFilters) {
+        searchAdvocates(searchParams);
+      } else {
+        loadAllAdvocates();
+      }
+      
       return newFilterState;
     });
-  }, []);
+  }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates]);
 
   const handleReset = useCallback(() => {
     const resetState = {
@@ -74,9 +90,10 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
       specialty: ''
     };
     setFilterState(resetState);
-    onFiltersChangeRef.current(resetState);
-    onResetRef.current();
-  }, []);
+    resetFilters();
+    setCurrentPage(1);
+    loadAllAdvocates();
+  }, [resetFilters, setCurrentPage, loadAllAdvocates]);
 
   const hasActiveFilters = Object.values(filterState).some(value => value.trim() !== '');
 

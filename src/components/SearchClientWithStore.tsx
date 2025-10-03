@@ -1,12 +1,16 @@
 "use client";
 
-import { useCallback, useMemo, useEffect } from "react";
+import { useCallback, useMemo, useEffect, useState } from "react";
 import { useAdvocates, useAdvocatesLoading, useAdvocatesError, useAdvocatesPagination, useAdvocatesFilters, useAdvocateStore } from "../stores/advocateStore";
 import { AdvancedFilters } from "./AdvancedFilters";
 import { AdvocateTable } from "./AdvocateTable";
 import { Pagination } from "./Pagination";
 import { SkeletonFilters } from "./SkeletonFilters";
 import { SkeletonTable } from "./SkeletonTable";
+import { Modal } from "./Modal";
+import { Tooltip } from "./Tooltip";
+import { AdvocateForm } from "./AdvocateForm";
+import { AdvocateFormInput } from "../schemas/advocateSchemas";
 
 /**
  * Renders an advanced search UI and advocates table powered by Zustand store.
@@ -26,6 +30,9 @@ export function SearchClientWithStore() {
   const pagination = useAdvocatesPagination();
   const filters = useAdvocatesFilters();
   const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters, setItemsPerPage } = useAdvocateStore();
+  
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Extract unique values for filter options
   const availableCities = useMemo(() =>
@@ -137,6 +144,19 @@ export function SearchClientWithStore() {
     }
   }, [setItemsPerPage, setCurrentPage, searchAdvocates, loadAllAdvocates, filters]);
 
+  const handleAdvocateSubmit = useCallback(async (data: AdvocateFormInput) => {
+    try {
+      // Here you would typically make an API call to create the advocate
+      // For now, we'll just close the modal and refresh the data
+      console.log('New advocate data:', data);
+      setIsModalOpen(false);
+      // Refresh the advocates list
+      loadAllAdvocates();
+    } catch (error) {
+      console.error('Error creating advocate:', error);
+    }
+  }, [loadAllAdvocates]);
+
   return (
     <div className="flex flex-col gap-6">
       {loading && advocates.length === 0 ? (
@@ -184,6 +204,35 @@ export function SearchClientWithStore() {
           isLoading={loading}
         />
       )}
+
+      {/* Add Advocate Button */}
+      <div className="flex justify-end">
+        <Tooltip content="New Advocate" position="left">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            aria-label="Add new advocate"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </Tooltip>
+      </div>
+
+      {/* Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Add New Advocate"
+        size="lg"
+      >
+        <AdvocateForm
+          onSubmit={handleAdvocateSubmit}
+          onCancel={() => setIsModalOpen(false)}
+          isLoading={loading}
+        />
+      </Modal>
     </div>
   );
 }
