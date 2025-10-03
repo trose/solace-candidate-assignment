@@ -3,7 +3,6 @@ import {
   pgTable,
   integer,
   text,
-  jsonb,
   serial,
   timestamp,
   bigint,
@@ -15,10 +14,12 @@ const advocates = pgTable("advocates", {
   lastName: text("last_name").notNull(),
   city: text("city").notNull(),
   degree: text("degree").notNull(),
-  specialties: jsonb("payload").default([]).notNull(),
+  specialties: text("specialties").array().default(sql`'{}'`).notNull(),
   yearsOfExperience: integer("years_of_experience").notNull(),
   phoneNumber: bigint("phone_number", { mode: "number" }).notNull(),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
+
+// Indexes can be added in migrations or db setup for performance
 
 export { advocates };
