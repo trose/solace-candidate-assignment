@@ -37,16 +37,19 @@ class RedisCache {
     // Handle connection events
     this.redis.on('connect', () => {
       this.isConnected = true;
+      // eslint-disable-next-line no-console
       console.log('Redis connected successfully');
     });
 
     this.redis.on('error', (error) => {
       this.isConnected = false;
+      // eslint-disable-next-line no-console
       console.error('Redis connection error:', error);
     });
 
     this.redis.on('close', () => {
       this.isConnected = false;
+      // eslint-disable-next-line no-console
       console.log('Redis connection closed');
     });
 
@@ -67,6 +70,7 @@ class RedisCache {
     }
 
     if (!this.isConnected) {
+      // eslint-disable-next-line no-console
       console.warn('Redis not connected, skipping cache set');
       return;
     }
@@ -74,9 +78,10 @@ class RedisCache {
     try {
       const serializedData = JSON.stringify(data);
       const ttlSeconds = ttl || this.defaultTTL;
-      
+
       await this.redis.setex(key, ttlSeconds, serializedData);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Redis set error:', error);
       // Don't throw - cache failures shouldn't break the application
     }
@@ -99,7 +104,7 @@ class RedisCache {
 
     try {
       const result = await this.redis.get(key);
-      
+
       if (result === null) {
         this.missCount++;
         return null;
@@ -108,6 +113,7 @@ class RedisCache {
       this.hitCount++;
       return JSON.parse(result) as T;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Redis get error:', error);
       this.missCount++;
       return null;
