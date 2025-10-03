@@ -62,7 +62,7 @@ export function useAdvocateForm(defaultValues?: Partial<AdvocateFormInput>) {
   /**
    * Set a field value and trigger validation
    */
-  const setFieldValue = (field: keyof AdvocateFormInput, value: unknown) => {
+  const setFieldValue = (field: keyof AdvocateFormInput, value: string | number | string[]) => {
     setValue(field, value, { shouldValidate: true });
   };
 

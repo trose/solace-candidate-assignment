@@ -248,8 +248,10 @@ export function measureWebVitals() {
     let clsValue = 0;
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        if (!(entry as Record<string, unknown>).hadRecentInput) {
-          clsValue += (entry as Record<string, unknown>).value as number;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (!(entry as any).hadRecentInput) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          clsValue += (entry as any).value as number;
         }
       }
       performanceMonitor.startTiming('CLS', {
