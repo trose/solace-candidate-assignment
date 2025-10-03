@@ -12,8 +12,8 @@ export const AdvocateRow: React.FC<AdvocateRowProps> = ({ advocate }) => {
       <td>{advocate.city}</td>
       <td>{advocate.degree}</td>
       <td>
-        {advocate.specialties.map((specialty, index) => (
-          <div key={index}>{specialty}</div>
+        {advocate.specialties.map((specialty) => (
+          <div key={specialty}>{specialty}</div>
         ))}
       </td>
       <td>{advocate.yearsOfExperience}</td>

@@ -13,7 +13,7 @@ export const filterAdvocates = (advocates: Advocate[], searchTerm: string): Advo
       advocate.city.toLowerCase().includes(searchLower) ||
       advocate.degree.toLowerCase().includes(searchLower) ||
       advocate.specialties.some(specialty => specialty.toLowerCase().includes(searchLower)) ||
-      advocate.yearsOfExperience.toString().includes(searchTerm)
+       advocate.yearsOfExperience.toString().includes(searchLower)
     );
   });
 };

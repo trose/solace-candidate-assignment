@@ -9,12 +9,13 @@ export const SearchInput: React.FC<SearchInputProps> = ({ onChange, onReset }) =
       <label htmlFor="search-input">Search</label>
       <input
         id="search-input"
-        style={{ border: "1px solid black" }}
+        type="text"
+        className="border border-black"
         onChange={onChange}
         placeholder="Search advocates..."
         aria-label="Search for advocates"
       />
-      <button onClick={onReset}>Reset Search</button>
+      <button onClick={onReset} aria-label="Reset search to show all advocates">Reset Search</button>
     </div>
   );
 };
