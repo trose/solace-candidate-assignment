@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { useAdvocateStore } from "../stores/advocateStore";
+import { useSetFilters, useSetCurrentPage, useSearchAdvocates, useLoadAllAdvocates, useResetFilters } from "../stores/advocateStore";
 
 interface FilterOptions {
   search: string;
@@ -22,7 +22,7 @@ interface AdvancedFiltersProps {
   isLoading?: boolean;
 }
 
-export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
+const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
   onFiltersChange,
   onReset,
   availableCities,
@@ -50,8 +50,12 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
     specialty: ''
   });
   
-  // Use Zustand store directly to avoid callback issues
-  const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters } = useAdvocateStore();
+  // Use atomic selectors to prevent unnecessary re-renders
+  const setFilters = useSetFilters();
+  const setCurrentPage = useSetCurrentPage();
+  const searchAdvocates = useSearchAdvocates();
+  const loadAllAdvocates = useLoadAllAdvocates();
+  const resetFilters = useResetFilters();
   
   const handleFilterChange = useCallback((field: keyof FilterOptions, value: string) => {
     // Update local state immediately
@@ -340,6 +344,20 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
         )}
       </div>
     </div>
+  );
+});
+
+// Memoize the component to prevent unnecessary re-renders
+export const AdvancedFilters = React.memo(AdvancedFiltersComponent, (prevProps, nextProps) => {
+  // Custom comparison function to prevent re-renders when props haven't meaningfully changed
+  return (
+    prevProps.isLoading === nextProps.isLoading &&
+    prevProps.availableCities.length === nextProps.availableCities.length &&
+    prevProps.availableDegrees.length === nextProps.availableDegrees.length &&
+    prevProps.availableSpecialties.length === nextProps.availableSpecialties.length &&
+    prevProps.availableCities.every((city, index) => city === nextProps.availableCities[index]) &&
+    prevProps.availableDegrees.every((degree, index) => degree === nextProps.availableDegrees[index]) &&
+    prevProps.availableSpecialties.every((specialty, index) => specialty === nextProps.availableSpecialties[index])
   );
 });
 

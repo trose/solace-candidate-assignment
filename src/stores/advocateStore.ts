@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import { shallow } from 'zustand/shallow';
 import { Advocate } from '../types/advocate';
 
 /**
@@ -299,6 +300,21 @@ export const useAdvocatesError = () => useAdvocateStore((state) => state.error);
 export const useAdvocatesTotal = () => useAdvocateStore((state) => state.total);
 export const useAdvocatesPagination = () => useAdvocateStore((state) => state.pagination);
 export const useAdvocatesFilters = () => useAdvocateStore((state) => state.filters);
+// Atomic selectors for individual actions to prevent unnecessary re-renders
+export const useSetAdvocates = () => useAdvocateStore((state) => state.setAdvocates);
+export const useSetTotal = () => useAdvocateStore((state) => state.setTotal);
+export const useSetLoading = () => useAdvocateStore((state) => state.setLoading);
+export const useSetError = () => useAdvocateStore((state) => state.setError);
+export const useSetCurrentPage = () => useAdvocateStore((state) => state.setCurrentPage);
+export const useSetItemsPerPage = () => useAdvocateStore((state) => state.setItemsPerPage);
+export const useSetTotalItems = () => useAdvocateStore((state) => state.setTotalItems);
+export const useSetFilters = () => useAdvocateStore((state) => state.setFilters);
+export const useResetFilters = () => useAdvocateStore((state) => state.resetFilters);
+export const useSearchAdvocates = () => useAdvocateStore((state) => state.searchAdvocates);
+export const useLoadAllAdvocates = () => useAdvocateStore((state) => state.loadAllAdvocates);
+export const useReset = () => useAdvocateStore((state) => state.reset);
+
+// Combined selector with shallow comparison for cases where multiple actions are needed
 export const useAdvocatesActions = () => useAdvocateStore((state) => ({
   setAdvocates: state.setAdvocates,
   setTotal: state.setTotal,
@@ -312,4 +328,4 @@ export const useAdvocatesActions = () => useAdvocateStore((state) => ({
   searchAdvocates: state.searchAdvocates,
   loadAllAdvocates: state.loadAllAdvocates,
   reset: state.reset,
-}));
+}), shallow);
