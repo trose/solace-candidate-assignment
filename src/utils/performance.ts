@@ -2,22 +2,26 @@
  * Performance monitoring utilities for the application
  * Provides methods to measure and track performance metrics
  */
+/* eslint-disable no-unused-vars */
 
 interface PerformanceMetric {
   name: string;
   startTime: number;
   endTime?: number;
   duration?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: Record<string, any>;
 }
 
 class PerformanceMonitor {
   private metrics: Map<string, PerformanceMetric> = new Map();
+  // eslint-disable-next-line no-unused-vars
   private observers: Set<(metric: PerformanceMetric) => void> = new Set();
 
   /**
    * Start timing a performance metric
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   startTiming(name: string, metadata?: Record<string, any>): void {
     const metric: PerformanceMetric = {
       name,
@@ -33,6 +37,7 @@ class PerformanceMonitor {
   endTiming(name: string): PerformanceMetric | null {
     const metric = this.metrics.get(name);
     if (!metric) {
+      // eslint-disable-next-line no-console
       console.warn(`Performance metric "${name}" not found`);
       return null;
     }
@@ -76,6 +81,7 @@ class PerformanceMonitor {
   /**
    * Subscribe to performance metric updates
    */
+  // eslint-disable-next-line no-unused-vars
   subscribe(observer: (metric: PerformanceMetric) => void): () => void {
     this.observers.add(observer);
     return () => this.observers.delete(observer);
@@ -101,6 +107,7 @@ class PerformanceMonitor {
   async measureFunction<T>(
     name: string,
     fn: () => Promise<T> | T,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata?: Record<string, any>
   ): Promise<T> {
     this.startTiming(name, metadata);
@@ -194,6 +201,7 @@ export function withPerformanceMeasurement<T extends unknown[], R>(
   fn: (...args: T) => Promise<R> | R,
   metadata?: Record<string, unknown>
 ) {
+  // eslint-disable-next-line no-unused-vars
   return async (...args: T): Promise<R> => {
     return performanceMonitor.measureFunction(name, () => fn(...args), metadata);
   };

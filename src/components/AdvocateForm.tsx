@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { useAdvocateForm } from '../hooks/useAdvocateForm';
 import { AdvocateFormInput } from '../schemas/advocateSchemas';
@@ -8,6 +9,7 @@ interface AdvocateFormProps {
   onSubmit: (data: AdvocateFormInput) => Promise<void>;
   onCancel?: () => void;
   isLoading?: boolean;
+  data?: Partial<AdvocateFormInput>; // For future edit functionality
 }
 
 /**

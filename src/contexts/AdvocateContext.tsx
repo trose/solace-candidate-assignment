@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable no-unused-vars */
 import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
 import { Advocate } from '../types/advocate';
 

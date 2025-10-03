@@ -1,9 +1,11 @@
 "use client";
 
+/* eslint-disable no-unused-vars */
 import React, { forwardRef } from 'react';
 
 interface SearchInputProps {
-  value: string;
+  // eslint-disable-next-line no-unused-vars
+  value: string; // Required for controlled input
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;

@@ -1,10 +1,12 @@
 "use client";
 
+/* eslint-disable no-unused-vars */
 import React, { forwardRef } from 'react';
 
 interface FilterSelectProps {
   id: string;
-  value: string;
+  // eslint-disable-next-line no-unused-vars
+  value: string; // Required for controlled select
   onChange: (value: string) => void;
   options: string[];
   placeholder?: string;
