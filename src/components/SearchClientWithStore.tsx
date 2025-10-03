@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useEffect } from "react";
-import { useAdvocates, useAdvocatesLoading, useAdvocatesError, useAdvocatesPagination, useAdvocatesFilters, useAdvocatesActions } from "../stores/advocateStore";
+import { useAdvocates, useAdvocatesLoading, useAdvocatesError, useAdvocatesPagination, useAdvocatesFilters, useAdvocateStore } from "../stores/advocateStore";
 import { AdvancedFilters } from "./AdvancedFilters";
 import { AdvocateTable } from "./AdvocateTable";
 import { Pagination } from "./Pagination";
@@ -25,7 +25,7 @@ export function SearchClientWithStore() {
   const error = useAdvocatesError();
   const pagination = useAdvocatesPagination();
   const filters = useAdvocatesFilters();
-  const actions = useAdvocatesActions();
+  const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters, setItemsPerPage } = useAdvocateStore();
 
   // Extract unique values for filter options
   const availableCities = useMemo(() =>
@@ -45,15 +45,15 @@ export function SearchClientWithStore() {
 
   // Load all advocates on mount
   useEffect(() => {
-    actions.loadAllAdvocates();
-  }, [actions]);
+    loadAllAdvocates();
+  }, [loadAllAdvocates]);
 
   const handleFiltersChange = useCallback((newFilters: typeof filters) => {
     // Update filters in store
-    actions.setFilters(newFilters);
+    setFilters(newFilters);
 
     // Reset to first page when filters change
-    actions.setCurrentPage(1);
+    setCurrentPage(1);
 
     // Convert empty strings to undefined for the API
     const searchParams = {
@@ -71,20 +71,20 @@ export function SearchClientWithStore() {
     const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
 
     if (hasActiveFilters) {
-      actions.searchAdvocates(searchParams);
+      searchAdvocates(searchParams);
     } else {
-      actions.loadAllAdvocates();
+      loadAllAdvocates();
     }
-  }, [actions, pagination.itemsPerPage]);
+  }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage]);
 
   const handleReset = useCallback(() => {
-    actions.resetFilters();
-    actions.setCurrentPage(1);
-    actions.loadAllAdvocates();
-  }, [actions]);
+    resetFilters();
+    setCurrentPage(1);
+    loadAllAdvocates();
+  }, [resetFilters, setCurrentPage, loadAllAdvocates]);
 
   const handlePageChange = useCallback((page: number) => {
-    actions.setCurrentPage(page);
+    setCurrentPage(page);
 
     // Trigger search with new pagination
     const offset = (page - 1) * pagination.itemsPerPage;
@@ -105,15 +105,15 @@ export function SearchClientWithStore() {
     const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
 
     if (hasActiveFilters) {
-      actions.searchAdvocates(searchParams);
+      searchAdvocates(searchParams);
     } else {
-      actions.loadAllAdvocates();
+      loadAllAdvocates();
     }
-  }, [actions, pagination.itemsPerPage, filters]);
+  }, [setCurrentPage, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, filters]);
 
   const handleItemsPerPageChange = useCallback((newItemsPerPage: number) => {
-    actions.setItemsPerPage(newItemsPerPage);
-    actions.setCurrentPage(1);
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
 
     // Trigger search with new items per page
     const searchParams = {
@@ -131,11 +131,11 @@ export function SearchClientWithStore() {
     const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
 
     if (hasActiveFilters) {
-      actions.searchAdvocates(searchParams);
+      searchAdvocates(searchParams);
     } else {
-      actions.loadAllAdvocates();
+      loadAllAdvocates();
     }
-  }, [actions, filters]);
+  }, [setItemsPerPage, setCurrentPage, searchAdvocates, loadAllAdvocates, filters]);
 
   return (
     <div className="flex flex-col gap-6">

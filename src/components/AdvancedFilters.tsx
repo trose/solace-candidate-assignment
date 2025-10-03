@@ -40,26 +40,26 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  useEffect(() => {
-    onFiltersChange(filterState);
-  }, [filterState, onFiltersChange]);
-
   const handleFilterChange = (field: keyof FilterOptions, value: string) => {
-    setFilterState(prev => ({
-      ...prev,
+    const newFilterState = {
+      ...filterState,
       [field]: value
-    }));
+    };
+    setFilterState(newFilterState);
+    onFiltersChange(newFilterState);
   };
 
   const handleReset = () => {
-    setFilterState({
+    const resetState = {
       search: '',
       city: '',
       degree: '',
       minExperience: '',
       maxExperience: '',
       specialty: ''
-    });
+    };
+    setFilterState(resetState);
+    onFiltersChange(resetState);
     onReset();
   };
 
