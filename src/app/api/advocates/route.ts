@@ -1,7 +1,7 @@
 import db from "../../../db";
 import { advocates } from "../../../db/schema";
 import { Advocate } from "../../../types/advocate";
-import { sql, ilike, or, and, gte, lte } from "drizzle-orm";
+import { sql, ilike, or, and, gte, lte, type SQL } from "drizzle-orm";
 import { cache, cacheKeys } from "../../../utils/cache";
 
 /**
@@ -47,19 +47,20 @@ export async function GET(request: Request) {
     }
 
     // Build dynamic where conditions
-    const conditions: any[] = [];
+    const conditions: SQL[] = [];
 
     if (search) {
       const searchPattern = `%${search.toLowerCase()}%`;
-      conditions.push(
-        or(
-          ilike(advocates.firstName, searchPattern),
-          ilike(advocates.lastName, searchPattern),
-          ilike(advocates.city, searchPattern),
-          ilike(advocates.degree, searchPattern),
-          sql`LOWER(${advocates.specialties}::text) LIKE ${searchPattern}`
-        )
+      const searchCondition = or(
+        ilike(advocates.firstName, searchPattern),
+        ilike(advocates.lastName, searchPattern),
+        ilike(advocates.city, searchPattern),
+        ilike(advocates.degree, searchPattern),
+        sql`LOWER(${advocates.specialties}::text) LIKE ${searchPattern}`
       );
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
     }
 
     if (city) {

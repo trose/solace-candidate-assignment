@@ -1,7 +1,7 @@
 import db from "../../../../db";
 import { advocates } from "../../../../db/schema";
 import { Advocate } from "../../../../types/advocate";
-import { sql, ilike, or, and, gte, lte } from "drizzle-orm";
+import { sql, ilike, or, and, gte, lte, type SQL } from "drizzle-orm";
 import { cache, cacheKeys } from "../../../../utils/cache";
 
 /**
@@ -57,22 +57,21 @@ export async function GET(request: Request) {
       return Response.json(cachedResult);
     }
 
-    let query = db.select().from(advocates);
-
     // Build dynamic where conditions
-    const conditions: any[] = [];
+    const conditions: SQL[] = [];
 
     if (search) {
       const searchPattern = `%${search.toLowerCase()}%`;
-      conditions.push(
-        or(
-          ilike(advocates.firstName, searchPattern),
-          ilike(advocates.lastName, searchPattern),
-          ilike(advocates.city, searchPattern),
-          ilike(advocates.degree, searchPattern),
-          sql`LOWER(${advocates.specialties}::text) LIKE ${searchPattern}`
-        )
+      const searchCondition = or(
+        ilike(advocates.firstName, searchPattern),
+        ilike(advocates.lastName, searchPattern),
+        ilike(advocates.city, searchPattern),
+        ilike(advocates.degree, searchPattern),
+        sql`LOWER(${advocates.specialties}::text) LIKE ${searchPattern}`
       );
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
     }
 
     if (city) {
@@ -95,27 +94,40 @@ export async function GET(request: Request) {
       conditions.push(sql`${advocates.specialties} @> ARRAY[${specialty}]`);
     }
 
-    // Apply conditions if any exist
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-
-    // Add pagination
-    if (limit) {
-      query = query.limit(parseInt(limit));
-    }
-    if (offset) {
-      query = query.offset(parseInt(offset));
-    }
-
-    const data = await query;
-
     // Get total count for pagination
-    let countQuery = db.select({ count: sql<number>`count(*)` }).from(advocates);
+    let countResult;
     if (conditions.length > 0) {
-      countQuery = countQuery.where(and(...conditions));
+      countResult = await db.select({ count: sql<number>`count(*)` }).from(advocates).where(and(...conditions));
+    } else {
+      countResult = await db.select({ count: sql<number>`count(*)` }).from(advocates);
     }
-    const [{ count }] = await countQuery;
+    const count = countResult[0].count;
+
+    // Build and execute query with pagination
+    let data;
+    if (conditions.length > 0) {
+      const baseQuery = db.select().from(advocates).where(and(...conditions));
+      if (limit && offset) {
+        data = await baseQuery.limit(parseInt(limit)).offset(parseInt(offset));
+      } else if (limit) {
+        data = await baseQuery.limit(parseInt(limit));
+      } else if (offset) {
+        data = await baseQuery.offset(parseInt(offset));
+      } else {
+        data = await baseQuery;
+      }
+    } else {
+      const baseQuery = db.select().from(advocates);
+      if (limit && offset) {
+        data = await baseQuery.limit(parseInt(limit)).offset(parseInt(offset));
+      } else if (limit) {
+        data = await baseQuery.limit(parseInt(limit));
+      } else if (offset) {
+        data = await baseQuery.offset(parseInt(offset));
+      } else {
+        data = await baseQuery;
+      }
+    }
 
     // Drizzle maps snake_case to camelCase automatically
     const mappedAdvocates: Advocate[] = data.map((row) => {

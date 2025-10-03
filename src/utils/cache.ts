@@ -5,6 +5,7 @@
 
 // Global type declaration for cleanup interval
 declare global {
+  // eslint-disable-next-line no-var
   var __cacheCleanupInterval: NodeJS.Timeout | undefined;
 }
 
@@ -130,7 +131,7 @@ function startCleanupInterval() {
   if (cleanupInterval) {
     clearInterval(cleanupInterval);
   }
-  
+
   cleanupInterval = setInterval(() => {
     cache.cleanup();
   }, 10 * 60 * 1000);
