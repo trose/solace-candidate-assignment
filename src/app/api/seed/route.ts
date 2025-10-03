@@ -68,8 +68,8 @@ export async function POST() {
       }
     }
 
-    // Clear cache after seeding to ensure fresh data
-    cache.clear();
+          // Clear cache after seeding to ensure fresh data
+          await cache.clear();
 
     return Response.json({
       message: `Seeding completed: ${insertedCount} inserted, ${updatedCount} updated`,

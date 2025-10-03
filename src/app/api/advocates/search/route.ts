@@ -51,11 +51,11 @@ export async function GET(request: Request) {
       offset: offset || '',
     });
 
-    // Check cache first
-    const cachedResult = cache.get<{advocates: Advocate[], total: number}>(cacheKey);
-    if (cachedResult) {
-      return Response.json(cachedResult);
-    }
+          // Check cache first
+          const cachedResult = await cache.get<{advocates: Advocate[], total: number}>(cacheKey);
+          if (cachedResult) {
+            return Response.json(cachedResult);
+          }
 
     // Build dynamic where conditions
     const conditions: SQL[] = [];
@@ -152,8 +152,8 @@ export async function GET(request: Request) {
       offset: offset ? parseInt(offset) : null
     };
 
-    // Cache the result for 5 minutes
-    cache.set(cacheKey, result, 5 * 60 * 1000);
+          // Cache the result for 5 minutes
+          await cache.set(cacheKey, result, 5 * 60);
 
     return Response.json(result);
   } catch (error) {

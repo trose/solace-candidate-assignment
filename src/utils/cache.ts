@@ -1,13 +1,9 @@
 /**
- * Simple in-memory cache for database queries
- * In production, consider using Redis or similar distributed cache
+ * Redis-based cache for database queries
+ * Provides distributed caching with TTL and automatic cleanup
  */
 
-interface CacheEntry<T> {
-  data: T;
-  timestamp: number;
-  ttl: number; // Time to live in milliseconds
-}
+import Redis from 'ioredis';
 
 interface CacheStats {
   size: number;
@@ -15,29 +11,75 @@ interface CacheStats {
   hitRate?: number;
 }
 
-class MemoryCache {
-  private cache = new Map<string, CacheEntry<unknown>>();
-  private defaultTTL = 5 * 60 * 1000; // 5 minutes default
+class RedisCache {
+  private redis: Redis;
+  private defaultTTL = 5 * 60; // 5 minutes in seconds (Redis uses seconds)
   private hitCount = 0;
   private missCount = 0;
+  private isConnected = false;
+
+  constructor() {
+    // Redis connection configuration
+    const redisConfig = {
+      host: process.env.REDIS_HOST || 'localhost',
+      port: parseInt(process.env.REDIS_PORT || '6379'),
+      password: process.env.REDIS_PASSWORD || undefined,
+      db: parseInt(process.env.REDIS_DB || '0'),
+      retryDelayOnFailover: 100,
+      maxRetriesPerRequest: 3,
+      lazyConnect: true, // Don't connect immediately
+      connectTimeout: 10000,
+      commandTimeout: 5000,
+    };
+
+    this.redis = new Redis(redisConfig);
+
+    // Handle connection events
+    this.redis.on('connect', () => {
+      this.isConnected = true;
+      console.log('Redis connected successfully');
+    });
+
+    this.redis.on('error', (error) => {
+      this.isConnected = false;
+      console.error('Redis connection error:', error);
+    });
+
+    this.redis.on('close', () => {
+      this.isConnected = false;
+      console.log('Redis connection closed');
+    });
+
+    // Graceful shutdown
+    process.on('SIGINT', () => this.disconnect());
+    process.on('SIGTERM', () => this.disconnect());
+  }
 
   /**
    * Set a value in the cache with optional TTL
    * @param key - Cache key
    * @param data - Data to cache
-   * @param ttl - Time to live in milliseconds (optional)
+   * @param ttl - Time to live in seconds (optional)
    */
-  set<T>(key: string, data: T, ttl?: number): void {
+  async set<T>(key: string, data: T, ttl?: number): Promise<void> {
     if (!key || key.trim() === '') {
       throw new Error('Cache key cannot be empty');
     }
 
-    const entry: CacheEntry<T> = {
-      data,
-      timestamp: Date.now(),
-      ttl: ttl || this.defaultTTL,
-    };
-    this.cache.set(key, entry);
+    if (!this.isConnected) {
+      console.warn('Redis not connected, skipping cache set');
+      return;
+    }
+
+    try {
+      const serializedData = JSON.stringify(data);
+      const ttlSeconds = ttl || this.defaultTTL;
+      
+      await this.redis.setex(key, ttlSeconds, serializedData);
+    } catch (error) {
+      console.error('Redis set error:', error);
+      // Don't throw - cache failures shouldn't break the application
+    }
   }
 
   /**
@@ -45,115 +87,134 @@ class MemoryCache {
    * @param key - Cache key
    * @returns Cached data or null if not found/expired
    */
-  get<T>(key: string): T | null {
+  async get<T>(key: string): Promise<T | null> {
     if (!key || key.trim() === '') {
       return null;
     }
 
-    const entry = this.cache.get(key);
-
-    if (!entry) {
+    if (!this.isConnected) {
       this.missCount++;
       return null;
     }
 
-    // Check if entry has expired
-    if (Date.now() - entry.timestamp > entry.ttl) {
-      this.cache.delete(key);
+    try {
+      const result = await this.redis.get(key);
+      
+      if (result === null) {
+        this.missCount++;
+        return null;
+      }
+
+      this.hitCount++;
+      return JSON.parse(result) as T;
+    } catch (error) {
+      console.error('Redis get error:', error);
       this.missCount++;
       return null;
     }
-
-    this.hitCount++;
-    return entry.data as T;
   }
 
   /**
    * Delete a specific key from the cache
    * @param key - Cache key to delete
    */
-  delete(key: string): void {
-    this.cache.delete(key);
+  async delete(key: string): Promise<void> {
+    if (!this.isConnected) {
+      return;
+    }
+
+    try {
+      await this.redis.del(key);
+    } catch (error) {
+      console.error('Redis delete error:', error);
+    }
   }
 
   /**
    * Clear all entries from the cache
    */
-  clear(): void {
-    this.cache.clear();
-    this.hitCount = 0;
-    this.missCount = 0;
-  }
+  async clear(): Promise<void> {
+    if (!this.isConnected) {
+      return;
+    }
 
-  /**
-   * Clean up expired entries
-   */
-  cleanup(): void {
-    const now = Date.now();
-    this.cache.forEach((entry, key) => {
-      if (now - entry.timestamp > entry.ttl) {
-        this.cache.delete(key);
-      }
-    });
+    try {
+      await this.redis.flushdb();
+      this.hitCount = 0;
+      this.missCount = 0;
+    } catch (error) {
+      console.error('Redis clear error:', error);
+    }
   }
 
   /**
    * Get cache statistics including hit rate
    * @returns Cache statistics
    */
-  getStats(): CacheStats {
+  async getStats(): Promise<CacheStats> {
     const totalRequests = this.hitCount + this.missCount;
     const hitRate = totalRequests > 0 ? this.hitCount / totalRequests : 0;
 
+    let keys: string[] = [];
+    let size = 0;
+
+    if (this.isConnected) {
+      try {
+        keys = await this.redis.keys('*');
+        size = keys.length;
+      } catch (error) {
+        console.error('Redis stats error:', error);
+      }
+    }
+
     return {
-      size: this.cache.size,
-      keys: Array.from(this.cache.keys()),
+      size,
+      keys,
       hitRate: Math.round(hitRate * 100) / 100, // Round to 2 decimal places
     };
+  }
+
+  /**
+   * Check if Redis is connected
+   */
+  isRedisConnected(): boolean {
+    return this.isConnected;
+  }
+
+  /**
+   * Disconnect from Redis
+   */
+  async disconnect(): Promise<void> {
+    try {
+      await this.redis.quit();
+    } catch (error) {
+      console.error('Redis disconnect error:', error);
+    }
+  }
+
+  /**
+   * Connect to Redis (if not already connected)
+   */
+  async connect(): Promise<void> {
+    if (!this.isConnected) {
+      try {
+        await this.redis.connect();
+      } catch (error) {
+        console.error('Redis connect error:', error);
+      }
+    }
   }
 }
 
 // Create a singleton instance
-const cache = new MemoryCache();
+const cache = new RedisCache();
 
-// Clean up expired entries every 10 minutes
-// Store interval handle to prevent memory leaks in Next.js
-let cleanupInterval: NodeJS.Timeout | null | undefined = null;
+// Initialize connection
+cache.connect().catch((error) => {
+  console.error('Failed to initialize Redis connection:', error);
+});
 
-function startCleanupInterval() {
-  // Clear any existing interval to prevent duplicates
-  if (cleanupInterval) {
-    clearInterval(cleanupInterval);
-  }
-
-  cleanupInterval = setInterval(() => {
-    cache.cleanup();
-  }, 10 * 60 * 1000);
-}
-
-function stopCleanupInterval() {
-  if (cleanupInterval) {
-    clearInterval(cleanupInterval);
-    cleanupInterval = undefined;
-  }
-}
-
-// Start cleanup interval
-startCleanupInterval();
-
-// Store cleanup functions on globalThis for Next.js hot reload handling
-if (typeof globalThis !== 'undefined') {
-  // Clear existing interval on module reload
-  const globalCache = globalThis as typeof globalThis & {
-    __cacheCleanupInterval?: NodeJS.Timeout | null;
-  };
-  if (globalCache.__cacheCleanupInterval) {
-    clearInterval(globalCache.__cacheCleanupInterval);
-  }
-  globalCache.__cacheCleanupInterval = cleanupInterval;
-}
-
-export { cache, stopCleanupInterval };
+export { cache };
 
 // Cache key generators
 export const cacheKeys = {
@@ -163,7 +224,3 @@ export const cacheKeys = {
     byId: (id: number) => `advocates:id:${id}`,
   },
 } as const;
-
-// Make this file a module to enable global declarations
-export {};
-

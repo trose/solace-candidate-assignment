@@ -40,11 +40,11 @@ export async function GET(request: Request) {
       specialty: specialty || '',
     });
 
-    // Check cache first
-    const cachedResult = cache.get<Advocate[]>(cacheKey);
-    if (cachedResult) {
-      return Response.json({ advocates: cachedResult });
-    }
+          // Check cache first
+          const cachedResult = await cache.get<Advocate[]>(cacheKey);
+          if (cachedResult) {
+            return Response.json({ advocates: cachedResult });
+          }
 
     // Build dynamic where conditions
     const conditions: SQL[] = [];
@@ -107,8 +107,8 @@ export async function GET(request: Request) {
       };
     });
 
-    // Cache the result for 5 minutes
-    cache.set(cacheKey, mappedAdvocates, 5 * 60 * 1000);
+          // Cache the result for 5 minutes
+          await cache.set(cacheKey, mappedAdvocates, 5 * 60);
 
     return Response.json({ advocates: mappedAdvocates });
   } catch (error) {
