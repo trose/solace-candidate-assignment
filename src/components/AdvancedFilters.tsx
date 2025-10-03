@@ -2,6 +2,9 @@
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useAdvocateContext } from "../contexts/AdvocateContext";
+import { SearchInput } from "./SearchInput";
+import { FilterInput } from "./FilterInput";
+import { FilterSelect } from "./FilterSelect";
 
 interface FilterOptions {
   search: string;
@@ -191,16 +194,11 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
         <label htmlFor="search-input" className="block text-sm font-medium text-gray-700 mb-1">
           Search
         </label>
-        <input
-          id="search-input"
-          type="text"
-          className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        <SearchInput
           value={filterState.search}
-          onChange={(e) => handleFilterChange('search', e.target.value)}
+          onChange={(value) => handleFilterChange('search', value)}
           placeholder="Search by name, city, degree, or specialty..."
-          aria-label="Search for advocates"
           disabled={isLoading}
-          autoComplete="off"
         />
       </div>
 
@@ -216,18 +214,14 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
           <label htmlFor="city-filter" className="block text-sm font-medium text-gray-700 mb-1">
             City
           </label>
-          <select
+          <FilterSelect
             id="city-filter"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={filterState.city}
-            onChange={(e) => handleFilterChange('city', e.target.value)}
+            onChange={(value) => handleFilterChange('city', value)}
+            options={availableCities}
+            placeholder="All Cities"
             disabled={isLoading}
-          >
-            <option value="">All Cities</option>
-            {availableCities.map(city => (
-              <option key={city} value={city}>{city}</option>
-            ))}
-          </select>
+          />
         </div>
 
         {/* Degree Filter */}
@@ -235,18 +229,14 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
           <label htmlFor="degree-filter" className="block text-sm font-medium text-gray-700 mb-1">
             Degree
           </label>
-          <select
+          <FilterSelect
             id="degree-filter"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={filterState.degree}
-            onChange={(e) => handleFilterChange('degree', e.target.value)}
+            onChange={(value) => handleFilterChange('degree', value)}
+            options={availableDegrees}
+            placeholder="All Degrees"
             disabled={isLoading}
-          >
-            <option value="">All Degrees</option>
-            {availableDegrees.map(degree => (
-              <option key={degree} value={degree}>{degree}</option>
-            ))}
-          </select>
+          />
         </div>
 
         {/* Specialty Filter */}
@@ -254,18 +244,14 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
           <label htmlFor="specialty-filter" className="block text-sm font-medium text-gray-700 mb-1">
             Specialty
           </label>
-          <select
+          <FilterSelect
             id="specialty-filter"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={filterState.specialty}
-            onChange={(e) => handleFilterChange('specialty', e.target.value)}
+            onChange={(value) => handleFilterChange('specialty', value)}
+            options={availableSpecialties}
+            placeholder="All Specialties"
             disabled={isLoading}
-          >
-            <option value="">All Specialties</option>
-            {availableSpecialties.map(specialty => (
-              <option key={specialty} value={specialty}>{specialty}</option>
-            ))}
-          </select>
+          />
         </div>
 
         {/* Experience Range */}
@@ -273,16 +259,15 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
           <label htmlFor="min-experience" className="block text-sm font-medium text-gray-700 mb-1">
             Min Experience (years)
           </label>
-          <input
+          <FilterInput
             id="min-experience"
             type="number"
-            min="0"
-            max="50"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={filterState.minExperience}
-            onChange={(e) => handleFilterChange('minExperience', e.target.value)}
+            onChange={(value) => handleFilterChange('minExperience', value)}
             placeholder="0"
             disabled={isLoading}
+            min="0"
+            max="50"
           />
         </div>
 
@@ -290,16 +275,15 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
           <label htmlFor="max-experience" className="block text-sm font-medium text-gray-700 mb-1">
             Max Experience (years)
           </label>
-          <input
+          <FilterInput
             id="max-experience"
             type="number"
-            min="0"
-            max="50"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={filterState.maxExperience}
-            onChange={(e) => handleFilterChange('maxExperience', e.target.value)}
+            onChange={(value) => handleFilterChange('maxExperience', value)}
             placeholder="50"
             disabled={isLoading}
+            min="0"
+            max="50"
           />
         </div>
 
