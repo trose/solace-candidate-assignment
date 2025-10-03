@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { useAdvocateForm } from '../hooks/useAdvocateForm';
 import { AdvocateFormInput } from '../schemas/advocateSchemas';
