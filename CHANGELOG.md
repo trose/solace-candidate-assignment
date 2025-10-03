@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2025-01-31
+
+### Added
+- Database performance optimizations with comprehensive indexing strategy
+- Server-side filtering and pagination for advocate search API
+- In-memory caching system with TTL and automatic cleanup
+- Advanced search API endpoint with filtering capabilities
+- Database connection pooling with environment-specific configuration
+- Unique constraint on advocate first name + last name combination
+- Comprehensive database migrations for schema evolution
+
+### Changed
+- Converted client-side filtering to server-side for better performance
+- Updated advocate search to use server-side pagination and filtering
+- Improved database schema with proper indexes (B-tree and GIN)
+- Enhanced seed API to use PostgreSQL native upsert operations
+- Refactored search functionality to use custom hooks for better state management
+- Updated project to use relative import paths consistently
+- Replaced `globalThis as any` with proper TypeScript typing using intersection types
+
+### Fixed
+- Resolved PostgreSQL migration issues with column type conversions
+- Fixed specialty search functionality to properly handle array containment
+- Corrected TypeScript type errors in query building logic
+- Fixed cache cleanup interval management for Next.js hot reloads
+- Resolved linting errors and improved code quality
+- Fixed upsert logic to use PostgreSQL's native `INSERT ... ON CONFLICT UPDATE`
+
+### Performance
+- Added database indexes on all searchable fields (firstName, lastName, city, degree, yearsOfExperience)
+- Implemented GIN index for array searches on specialties
+- Added composite index for full name searches
+- Enhanced connection pooling with production-optimized settings
+- Implemented caching layer to reduce database query load
+
+### Database
+- Added comprehensive migration strategy with proper rollback support
+- Implemented proper data type handling (jsonb to text[] conversion)
+- Added unique constraints to prevent duplicate advocate records
+- Enhanced database schema with proper indexing for performance
+
 ## [0.1.2] - 2024-10-03
 
 ### Security
