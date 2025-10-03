@@ -40,6 +40,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
   });
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Use Zustand store directly to avoid callback issues
   const { setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates, resetFilters } = useAdvocateStore();
@@ -50,37 +51,73 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
         ...prevState,
         [field]: value
       };
-      
+
       // Update store directly
       setFilters(newFilterState);
       setCurrentPage(1);
-      
-      // Convert empty strings to undefined for the API
-      const searchParams = {
-        search: newFilterState.search || undefined,
-        city: newFilterState.city || undefined,
-        degree: newFilterState.degree || undefined,
-        minExperience: newFilterState.minExperience || undefined,
-        maxExperience: newFilterState.maxExperience || undefined,
-        specialty: newFilterState.specialty || undefined,
-        limit: 25, // Default limit
-        offset: 0,
-      };
 
-      // Check if any filters are active
-      const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
-
-      if (hasActiveFilters) {
-        searchAdvocates(searchParams);
-      } else {
-        loadAllAdvocates();
+      // Clear existing timeout for search field
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
       }
-      
+
+      // For search field, use debouncing to prevent focus loss
+      if (field === 'search') {
+        searchTimeoutRef.current = setTimeout(() => {
+          // Convert empty strings to undefined for the API
+          const searchParams = {
+            search: newFilterState.search || undefined,
+            city: newFilterState.city || undefined,
+            degree: newFilterState.degree || undefined,
+            minExperience: newFilterState.minExperience || undefined,
+            maxExperience: newFilterState.maxExperience || undefined,
+            specialty: newFilterState.specialty || undefined,
+            limit: 25, // Default limit
+            offset: 0,
+          };
+
+          // Check if any filters are active
+          const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
+
+          if (hasActiveFilters) {
+            searchAdvocates(searchParams);
+          } else {
+            loadAllAdvocates();
+          }
+        }, 300); // 300ms debounce
+      } else {
+        // For other fields, search immediately
+        const searchParams = {
+          search: newFilterState.search || undefined,
+          city: newFilterState.city || undefined,
+          degree: newFilterState.degree || undefined,
+          minExperience: newFilterState.minExperience || undefined,
+          maxExperience: newFilterState.maxExperience || undefined,
+          specialty: newFilterState.specialty || undefined,
+          limit: 25, // Default limit
+          offset: 0,
+        };
+
+        // Check if any filters are active
+        const hasActiveFilters = Object.values(searchParams).some(value => value !== undefined);
+
+        if (hasActiveFilters) {
+          searchAdvocates(searchParams);
+        } else {
+          loadAllAdvocates();
+        }
+      }
+
       return newFilterState;
     });
   }, [setFilters, setCurrentPage, searchAdvocates, loadAllAdvocates]);
 
   const handleReset = useCallback(() => {
+    // Clear any pending search timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
     const resetState = {
       search: '',
       city: '',
@@ -94,6 +131,15 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = React.memo(({
     setCurrentPage(1);
     loadAllAdvocates();
   }, [resetFilters, setCurrentPage, loadAllAdvocates]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const hasActiveFilters = Object.values(filterState).some(value => value.trim() !== '');
 

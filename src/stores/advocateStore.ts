@@ -231,7 +231,9 @@ export const useAdvocateStore = create<AdvocateStoreState>()(
           set({ loading: true, error: null });
 
           try {
-            const response = await fetch('/api/advocates');
+            // Add cache-busting parameter to force fresh data
+            const cacheBuster = `_cb=${Date.now()}`;
+            const response = await fetch(`/api/advocates?${cacheBuster}`);
 
             if (!response.ok) {
               throw new Error('Failed to fetch advocates');
