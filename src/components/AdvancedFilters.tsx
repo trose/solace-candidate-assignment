@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import { useAdvocatesFilters, useAdvocatesPagination, useAdvocateStore } from "../stores/advocateStore";
 import { FilterInput } from "./FilterInput";
 import { FilterSelect } from "./FilterSelect";
@@ -35,13 +35,6 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
   });
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const currentFiltersRef = useRef<FilterOptions>({
-    city: '',
-    degree: '',
-    minExperience: '',
-    maxExperience: '',
-    specialty: ''
-  });
 
   // Use Zustand store
   const filters = useAdvocatesFilters();
@@ -54,29 +47,23 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
 
   const handleFilterChange = useCallback((field: keyof FilterOptions, value: string) => {
     // Update local state immediately
-    setFilterState(prevState => {
-      const newFilterState = {
-        ...prevState,
-        [field]: value
-      };
-
-      // Update ref to track current state
-      currentFiltersRef.current = newFilterState;
-
-      return newFilterState;
-    });
+    setFilterState(prevState => ({
+      ...prevState,
+      [field]: value
+    }));
 
     // Update store and search immediately for filters (no debouncing needed)
     setFilters({ [field]: value });
     setPagination({ currentPage: 1 });
 
+    // Use updated filters from store (Zustand updates are synchronous)
     const searchParams = {
-      search: filters.search || undefined, // Include current search term
-      city: currentFiltersRef.current.city || undefined,
-      degree: currentFiltersRef.current.degree || undefined,
-      minExperience: currentFiltersRef.current.minExperience || undefined,
-      maxExperience: currentFiltersRef.current.maxExperience || undefined,
-      specialty: currentFiltersRef.current.specialty || undefined,
+      search: filters.search || undefined,
+      city: filters.city || undefined,
+      degree: filters.degree || undefined,
+      minExperience: filters.minExperience || undefined,
+      maxExperience: filters.maxExperience || undefined,
+      specialty: filters.specialty || undefined,
       limit: pagination.itemsPerPage,
       offset: 0, // Reset to first page when filters change
     };
@@ -96,7 +83,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     } else {
       loadAllAdvocates();
     }
-  }, [setFilters, setPagination, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, filters.search]);
+  }, [setFilters, setPagination, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, filters]);
 
   const handleReset = useCallback(() => {
     const resetState = {
@@ -107,8 +94,6 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
       specialty: ''
     };
 
-    // Update ref and state
-    currentFiltersRef.current = resetState;
     setFilterState(resetState);
     resetFilters();
     setPagination({ currentPage: 1 });
