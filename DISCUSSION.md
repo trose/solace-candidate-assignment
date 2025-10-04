@@ -2,6 +2,16 @@
 
 Hey there! I'm excited to dive into the approach I took with this Solace candidate assignment. This was a fun challenge to build a modern web app for searching and managing advocates, and I learned a ton along the way. Let me break down my thought process, the fixes I implemented, and where we could take this next.
 
+## Chief Improvements
+
+Throughout the development process, several key improvements transformed the project from a basic implementation to a production-ready application:
+
+- **Database Performance**: Added strategic indices to the advocates table and implemented a dedicated search API endpoint for optimized query performance
+- **Search & Filter Logic**: Fixed critical AND logic bugs in search and filter combinations, ensuring accurate results when multiple criteria are applied
+- **State Management**: Migrated from React Context to Zustand for better performance, debugging capabilities, and automatic persistence
+- **Code Quality**: Established comprehensive linting, automated code reviews with CodeRabbit, and proper Gitflow practices
+- **User Experience**: Enhanced UI with professional styling, accessibility improvements, and reliable search debouncing
+
 ## Development Approach
 
 I broke down the development into 4 major iterative steps, each building on the previous while maintaining a focus on code quality, user experience, and performance. Each step was implemented through dedicated feature branches to ensure clean Gitflow practices and thorough code review.
@@ -27,7 +37,18 @@ Restructured the monolithic codebase into maintainable, focused components with 
 
 **Pull Request:** [#2](https://github.com/trose/solace-candidate-assignment/pull/2) - Enhance code quality and architecture
 
-### Step 3: UI/UX Architecture & State Management
+### Step 3: Core Functionality & Performance Optimization
+Fixed critical search and filter integration bugs, optimized database queries with proper indexing, and implemented caching strategies for better performance.
+
+**Implementation Details:**
+- **Search and Filter Integration**: Fixed critical bug where search terms and advanced filters weren't combining with proper AND logic
+- **Filter State Management**: Resolved issues with filter dropdowns sending stale values by implementing synchronous state updates
+- **Database Optimization**: Added strategic indices to the advocates table on searchable fields (name, city, degree, specialties) and created database migration files for performance improvements
+- **Search API Endpoint**: Implemented a dedicated `/api/advocates/search` endpoint with comprehensive filtering capabilities, input validation, and optimized SQL query building
+
+**Pull Requests:** [#4](https://github.com/trose/solace-candidate-assignment/pull/4) - Implement database performance optimizations and server-side search, [#9](https://github.com/trose/solace-candidate-assignment/pull/9) - Search and filtering AND logic
+
+### Step 4: UI/UX Architecture & State Management
 Enhanced the user interface with professional styling, improved state management using Zustand for better performance and debugging capabilities, and optimized user interactions with reliable search debouncing.
 
 **Implementation Details:**
@@ -38,16 +59,16 @@ Enhanced the user interface with professional styling, improved state management
 
 **Pull Requests:** [#6](https://github.com/trose/solace-candidate-assignment/pull/6) - UI UX improvements, [#8](https://github.com/trose/solace-candidate-assignment/pull/8) - Update styling to mimic Solace brand and improvements
 
-### Step 4: Core Functionality & Performance Optimization
-Fixed critical search and filter integration bugs, optimized database queries with proper indexing, and implemented caching strategies for better performance.
 
-**Implementation Details:**
-- **Search and Filter Integration**: Fixed critical bug where search terms and advanced filters weren't combining with proper AND logic
-- **Filter State Management**: Resolved issues with filter dropdowns sending stale values by implementing synchronous state updates
-- **Database Optimization**: Added proper indexing strategies and database migration files for searchable fields
-- **API Robustness**: Strengthened the search API with better input validation, comprehensive filtering capabilities, and proper SQL query building
+## Development Tools
 
-**Pull Requests:** [#4](https://github.com/trose/solace-candidate-assignment/pull/4) - Implement database performance optimizations and server-side search, [#9](https://github.com/trose/solace-candidate-assignment/pull/9) - Search and filtering AND logic
+Throughout the development process, I leveraged several powerful tools to enhance productivity and code quality:
+
+- **VSCode with opencode**: Used Visual Studio Code with the opencode extension powered by Grok-code-fast-1 for intelligent code completion, refactoring suggestions, and rapid development assistance.
+
+- **CodeRabbit GitHub Plugin**: Integrated CodeRabbit's automated code review system to provide consistent, AI-powered feedback on code quality, best practices, and potential issues during the review process.
+
+- **Postico2 for Database GUI**: Utilized Postico2 as a PostgreSQL database GUI for efficient database management, query testing, and data visualization during development and debugging.
 
 ## Development Tools
 
