@@ -193,7 +193,6 @@ export const useAdvocateStore = create<AdvocateState>()(
       {
         name: 'advocate-store',
         partialize: (state) => ({
-          filters: state.filters,
           pagination: {
             itemsPerPage: state.pagination.itemsPerPage,
           },
