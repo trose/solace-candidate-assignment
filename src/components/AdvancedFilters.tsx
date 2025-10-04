@@ -54,14 +54,14 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     setFilters({ [field]: value });
     setPagination({ currentPage: 1 });
 
-    // Use updated filters from store (Zustand updates are synchronous)
+    // Use updated filters from store, but override the changed field with new value
     const searchParams = {
       search: filters.search || undefined,
-      city: filters.city || undefined,
-      degree: filters.degree || undefined,
-      minExperience: filters.minExperience || undefined,
-      maxExperience: filters.maxExperience || undefined,
-      specialty: filters.specialty || undefined,
+      city: field === 'city' ? value : filters.city || undefined,
+      degree: field === 'degree' ? value : filters.degree || undefined,
+      minExperience: field === 'minExperience' ? value : filters.minExperience || undefined,
+      maxExperience: field === 'maxExperience' ? value : filters.maxExperience || undefined,
+      specialty: field === 'specialty' ? value : filters.specialty || undefined,
       limit: pagination.itemsPerPage,
       offset: 0, // Reset to first page when filters change
     };
@@ -81,7 +81,7 @@ const AdvancedFiltersComponent: React.FC<AdvancedFiltersProps> = ({
     } else {
       loadAllAdvocates();
     }
-  }, [setFilters, setPagination, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage]);
+  }, [setFilters, setPagination, searchAdvocates, loadAllAdvocates, pagination.itemsPerPage, filters]);
 
   const handleReset = useCallback(() => {
     const resetState = {
