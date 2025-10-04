@@ -49,9 +49,21 @@ Fixed critical search and filter integration bugs, optimized database queries wi
 
 **Pull Requests:** [#4](https://github.com/trose/solace-candidate-assignment/pull/4) - Implement database performance optimizations and server-side search, [#9](https://github.com/trose/solace-candidate-assignment/pull/9) - Search and filtering AND logic
 
+## Development Tools
+
+Throughout the development process, I leveraged several powerful tools to enhance productivity and code quality:
+
+- **VSCode with opencode**: Used Visual Studio Code with the opencode extension powered by Grok-code-fast-1 for intelligent code completion, refactoring suggestions, and rapid development assistance.
+
+- **CodeRabbit GitHub Plugin**: Integrated CodeRabbit's automated code review system to provide consistent, AI-powered feedback on code quality, best practices, and potential issues during the review process.
+
+- **Postico2 for Database GUI**: Utilized Postico2 as a PostgreSQL database GUI for efficient database management, query testing, and data visualization during development and debugging.
+
 ## Future Improvements
 
 Looking ahead, here are some areas we could enhance:
+
+- **CI/CD with GitHub Actions**: Set up automated testing, building, and deployment pipelines using GitHub Actions to ensure code quality, run tests on every push, and enable automated deployments to staging and production environments.
 
 - **Authentication & Authorization**: Implement secure user authentication (OAuth, JWT) and role-based access control to protect advocate data and enable user-specific features like saved searches and personal dashboards.
 
