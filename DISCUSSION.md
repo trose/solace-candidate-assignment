@@ -59,17 +59,6 @@ Enhanced the user interface with professional styling, improved state management
 
 **Pull Requests:** [#6](https://github.com/trose/solace-candidate-assignment/pull/6) - UI UX improvements, [#8](https://github.com/trose/solace-candidate-assignment/pull/8) - Update styling to mimic Solace brand and improvements
 
-
-## Development Tools
-
-Throughout the development process, I leveraged several powerful tools to enhance productivity and code quality:
-
-- **VSCode with opencode**: Used Visual Studio Code with the opencode extension powered by Grok-code-fast-1 for intelligent code completion, refactoring suggestions, and rapid development assistance.
-
-- **CodeRabbit GitHub Plugin**: Integrated CodeRabbit's automated code review system to provide consistent, AI-powered feedback on code quality, best practices, and potential issues during the review process.
-
-- **Postico2 for Database GUI**: Utilized Postico2 as a PostgreSQL database GUI for efficient database management, query testing, and data visualization during development and debugging.
-
 ## Development Tools
 
 Throughout the development process, I leveraged several powerful tools to enhance productivity and code quality:
@@ -91,8 +80,6 @@ Looking ahead, here are some areas we could enhance:
 - **Advanced Search with Redisearch**: Investigate Redisearch for lightweight inverted index search capabilities, enabling faster fuzzy matching, autocomplete, and semantic search across advocate profiles without heavy database queries.
 
 - **End-to-End & Unit Testing**: Expand testing coverage with comprehensive unit tests for all components and utilities, plus Playwright-based E2E tests to ensure critical user workflows (search, filter, pagination) work reliably across browsers.
-
-- **Advanced Search Features**: Implement fuzzy search, autocomplete suggestions, semantic search and search result highlighting.
 
 - **Bulk Operations**: Allow selecting multiple advocates for bulk editing or exporting.
 
