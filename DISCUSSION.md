@@ -4,49 +4,42 @@ Hey there! I'm excited to dive into the approach I took with this Solace candida
 
 ## Overall Approach
 
-I started by analyzing the requirements and decided to build a full-stack Next.js application with a focus on performance, user experience, and maintainable code. The backend uses PostgreSQL with Drizzle ORM for type-safe database operations, while the frontend leverages React with Zustand for state management and Tailwind for styling. I prioritized clean architecture, proper error handling, and responsive design from the get-go.
+I broke down the development into 4 major iterative steps, each building on the previous while maintaining a focus on code quality, user experience, and performance. Each step was implemented through dedicated feature branches to ensure clean Gitflow practices and thorough code review.
 
-## Fixes and Functionality Improvements
+### Step 1: Project Setup & Quality Foundation
+Established the development environment with proper tooling, linting, and code review processes. This included setting up Husky pre-commit hooks, ESLint configuration, and enabling automated code reviews.
 
-### Frontend (FE) Improvements
+### Step 2: Code Architecture & Component Organization
+Restructured the monolithic codebase into maintainable, focused components with clear separation of concerns. Implemented proper error handling, separated server and client components for optimal performance, and established consistent import patterns.
 
-- **Search and Filter Integration**: Fixed a critical bug where search terms and advanced filters weren't combining properly with AND logic. Now when you search for "John" and filter by "New York", you get advocates named John in New York. This involved updating the debouncing logic and ensuring filter state updates immediately.
+### Step 3: UI/UX Architecture & State Management
+Enhanced the user interface with professional styling, improved state management using Zustand for better performance and debugging capabilities, and optimized user interactions with reliable debouncing.
 
-- **Filter State Management**: Resolved issues with filter dropdowns sending stale values to the API. Implemented synchronous state updates and direct value overrides to ensure newly selected filters are used immediately in API calls.
+### Step 4: Core Functionality & Performance Optimization
+Fixed critical search and filter integration bugs, optimized database queries with proper indexing, and implemented caching strategies for better performance.
 
-- **UI Responsiveness and Accessibility**: Enhanced the interface with better loading states, error handling, and keyboard navigation. Added ARIA labels, focus management, and screen reader support throughout the app.
+### Step 1: Project Setup & Quality Foundation
+- **Development Tooling**: Set up Husky pre-commit hooks with ESLint and commitlint for code quality enforcement
+- **Code Review Process**: Enabled automated code reviews with CodeRabbit for consistent quality standards
+- **Version Management**: Implemented proper versioning and changelog maintenance
 
-- **Performance Optimizations**: Replaced custom debounce implementations with the `use-debounce` library for more reliable input handling. Added React.memo for component optimization and lazy loading for better bundle splitting.
+### Step 2: Code Architecture & Component Organization
+- **Component Separation**: Split monolithic components into focused, single-responsibility components (SearchBar, AdvancedFilters, AdvocateTable, etc.)
+- **Error Handling**: Improved error boundaries and user-friendly error messages throughout the application
+- **Performance Optimization**: Separated server and client components for progressive page loading and better bundle optimization
+- **Type Safety**: Introduced comprehensive TypeScript types and Zod schemas for runtime validation
 
-### Backend (BE) Improvements
+### Step 3: UI/UX Architecture & State Management
+- **State Management Migration**: Replaced React Context with Zustand for more efficient state handling, better debugging with DevTools, and automatic persistence capabilities
+- **UI Enhancements**: Updated styling to match professional standards with improved header design and responsive layout
+- **User Experience**: Replaced custom debounce implementations with the `use-debounce` library for reliable input handling and smoother search interactions
+- **Accessibility**: Added ARIA labels, focus management, and keyboard navigation support
 
-- **API Robustness**: Strengthened the search API with better input validation, caching, and error handling. Added comprehensive filtering capabilities for multiple criteria with proper SQL query building.
-
-- **Database Optimization**: Implemented indexing strategies and connection pooling for better performance. Added unique constraints and proper data types to prevent data integrity issues.
-
-- **Caching Layer**: Integrated Redis-based caching with TTL to reduce database load and improve response times for frequently accessed data.
-
-## Code Organization Changes
-
-I restructured the codebase for better maintainability and scalability:
-
-- **Component Separation**: Split monolithic components into smaller, focused ones (SearchBar, AdvancedFilters, etc.) with clear single responsibilities.
-
-- **State Management Migration**: Moved from React Context to Zustand for more efficient state handling, better debugging with DevTools, and automatic persistence.
-
-- **Type Safety**: Introduced comprehensive TypeScript types and Zod schemas for runtime validation, eliminating many potential bugs.
-
-- **Folder Structure**: Organized code into logical directories (components, stores, hooks, utils) with consistent import paths.
-
-## Major Libraries Added
-
-- **use-debounce**: For reliable input debouncing instead of custom setTimeout logic. This prevents excessive API calls and improves user experience with smoother search interactions.
-
-- **Zustand**: Replaced Context for state management. It's lighter, has better performance, and provides built-in persistence and debugging tools.
-
-- **Drizzle ORM**: For type-safe database operations. It generates SQL at build time and provides excellent TypeScript integration compared to raw SQL.
-
-- **React Hook Form + Zod**: For form handling and validation. This gives us real-time validation, better UX, and type-safe form data.
+### Step 4: Core Functionality & Performance Optimization
+- **Search and Filter Integration**: Fixed critical bug where search terms and advanced filters weren't combining with proper AND logic
+- **Filter State Management**: Resolved issues with filter dropdowns sending stale values by implementing synchronous state updates
+- **Database Optimization**: Added proper indexing strategies and database migration files for searchable fields
+- **API Robustness**: Strengthened the search API with better input validation, comprehensive filtering capabilities, and proper SQL query building
 
 ## Future Improvements
 
